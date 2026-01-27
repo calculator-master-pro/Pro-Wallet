@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pro Wallet - Premium Earning</title>
+    
+    <!-- PWA Manifest & Meta -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e3c72">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1067/1067566.png">
+
     <!-- Google Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -315,7 +323,7 @@
         </div>
     </div>
 
-    <!-- 2. DEPOSIT PAGE (Second Step) -->
+    <!-- 2. DEPOSIT PAGE (Dynamic Update) -->
     <div id="deposit-screen" class="screen">
         <div class="header-nav">
             <span class="header-title">Activate Account</span>
@@ -324,10 +332,13 @@
         <div style="padding: 20px;">
             <div style="background: white; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
                 <p style="color: #666; font-size: 13px; margin-bottom: 10px;">Membership Fee</p>
-                <h1 style="color: #1e3c72; font-size: 40px; font-weight: 700;">৳500</h1>
+                <!-- DYNAMIC AMOUNT -->
+                <h1 style="color: #1e3c72; font-size: 40px; font-weight: 700;">৳<span id="display-dep-amount">...</span></h1>
+                
                 <div style="margin: 20px 0; padding: 15px; background: #f8f9fa; border: 1px dashed #1e3c72; border-radius: 10px;">
                     <span style="font-size: 12px; color: #888;">Send money to (Bkash/Nagad)</span>
-                    <h3 style="color: #1e3c72; margin-top: 5px;">01700000000</h3>
+                    <!-- DYNAMIC NUMBER -->
+                    <h3 style="color: #1e3c72; margin-top: 5px; cursor:pointer;" id="display-dep-number" onclick="copyText('display-dep-number')">Loading...</h3>
                 </div>
             </div>
 
@@ -611,6 +622,19 @@
     const db = getDatabase(app);
     let currentUserData = null;
     let userUnsubscribe = null; 
+    
+    // Global Variables for Admin Settings
+    let adminDepositNumber = "LOADING...";
+    let adminDepositAmount = 500; // default backup
+
+    // --- SERVICE WORKER REGISTRATION (PWA) ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('SW Registered!', reg))
+            .catch(err => console.log('SW Error:', err));
+        });
+    }
 
     // --- INTERNET CHECK ---
     function updateOnlineStatus() {
@@ -667,15 +691,27 @@
     window.openWithdrawModal = () => document.getElementById('withdraw-modal').style.display = 'block';
     window.closeModal = (id) => document.getElementById(id).style.display = 'none';
 
-    // --- APP MAINTENANCE & DOWNLOAD LINK ---
+    // --- APP MAINTENANCE & DYNAMIC SETTINGS ---
     let appDownloadUrl = "#";
     onValue(ref(db, 'admin/settings'), (snapshot) => {
         const data = snapshot.val();
         if (data) {
+            // Maintenance Check
             if (data.maintenance === true) document.getElementById('maintenance-page').style.display = 'flex';
             else document.getElementById('maintenance-page').style.display = 'none';
             
+            // App Link
             if (data.app_link) appDownloadUrl = data.app_link;
+
+            // DYNAMIC DEPOSIT SETTINGS
+            if (data.payment_number) {
+                adminDepositNumber = data.payment_number;
+                document.getElementById('display-dep-number').innerText = adminDepositNumber;
+            }
+            if (data.deposit_amount) {
+                adminDepositAmount = parseInt(data.deposit_amount);
+                document.getElementById('display-dep-amount').innerText = adminDepositAmount;
+            }
         }
     });
 
@@ -703,8 +739,6 @@
                     localStorage.setItem('pro_wallet_device_id', user.uid);
                     handleUserStatus(currentUserData);
                     setLoading('btn-login', false);
-                } else {
-                    signOut(auth);
                 }
             });
         } else {
@@ -718,10 +752,7 @@
     });
 
     // --- STRICT USER STATUS HANDLER ---
-    // This function enforces the flow: Refer Code -> Deposit -> Pending -> Active
     function handleUserStatus(data) {
-        
-        // 1. If Account is Active -> Show Dashboard
         if (data.status === 'active') {
             document.getElementById('dash-balance').innerText = data.balance || 0;
             document.getElementById('dash-name').innerText = data.name;
@@ -730,23 +761,18 @@
             return;
         } 
         
-        // 2. If Account is NOT active (Pending/New)
-        // Step A: Check if Referral Code is used
         if (!data.referredBy || data.referredBy === "") {
-            // Dashboard remains hidden, show Refer Screen
             showScreen('refer-screen');
         } 
-        // Step B: If Referred, Check if Payment is done
         else if (!data.paymentInfo) {
             showScreen('deposit-screen');
         } 
-        // Step C: If Payment done, wait for admin
         else {
             showScreen('pending-screen');
         }
     }
 
-    // --- REGISTRATION LOGIC (Without Refer Code) ---
+    // --- REGISTRATION LOGIC ---
     window.registerUser = async () => {
         const existingDevice = localStorage.getItem('pro_wallet_device_id');
         if (existingDevice) { alert("Account Limit Reached!"); return; }
@@ -763,19 +789,17 @@
             const cred = await createUserWithEmailAndPassword(auth, email, pass);
             const myReferCode = (name.substring(0,3) + phone.slice(-4)).toUpperCase();
             
-            // Initial Data: referredBy is EMPTY
             await set(ref(db, 'users/' + cred.user.uid), {
                 name, email, phone, uid: cred.user.uid,
                 balance: 0, status: 'pending', referCode: myReferCode, 
-                referredBy: "", // Explicitly empty to force Refer Screen later
+                referredBy: "", 
                 refCount: 0, isBlocked: false, createdAt: Date.now()
             });
             localStorage.setItem('pro_wallet_device_id', cred.user.uid);
-            // No alert needed, onAuthStateChanged will detect login and send to Refer Screen
         } catch (e) { alert(e.message); setLoading('btn-reg', false); }
     };
 
-    // --- SUBMIT REFERRAL CODE (Step 1 after Login) ---
+    // --- SUBMIT REFERRAL CODE ---
     window.submitReferCode = async () => {
         const codeInput = document.getElementById('final-refer-code').value.trim().toUpperCase();
         if(!codeInput) { alert("Please enter a code"); return; }
@@ -798,16 +822,12 @@
             
             const referrerUid = Object.keys(snapshot.val())[0];
 
-            // 1. Increment Referrer Count
             const referrerRef = ref(db, 'users/' + referrerUid + '/refCount');
             await runTransaction(referrerRef, (cnt) => (cnt || 0) + 1);
 
-            // 2. Update Current User
             await update(ref(db, 'users/' + auth.currentUser.uid), {
                 referredBy: codeInput
             });
-
-            // Success! handleUserStatus will auto-switch to Deposit screen now
             
         } catch (e) {
             alert(e.message);
@@ -827,7 +847,7 @@
 
     window.logout = () => signOut(auth);
 
-    // --- DEPOSIT (Step 2) ---
+    // --- DEPOSIT (UPDATED with Dynamic Amount) ---
     window.submitPayment = async () => {
         const method = document.getElementById('pay-method').value;
         const num = document.getElementById('pay-number').value;
@@ -835,12 +855,11 @@
         
         if(!method || !num || !trx) { alert("Fill all details"); return; }
 
-        const pInfo = { method, sender: num, trxID: trx, amount: 500, time: new Date().toDateString() };
+        // Use the DYNAMIC Admin Amount
+        const pInfo = { method, sender: num, trxID: trx, amount: adminDepositAmount, time: new Date().toDateString() };
 
-        // Save to User Profile (This triggers Pending Screen)
         await update(ref(db, 'users/' + auth.currentUser.uid), { paymentInfo: pInfo });
         
-        // Save to History Log
         const newDepRef = push(ref(db, 'deposits'));
         await set(newDepRef, { ...pInfo, uid: auth.currentUser.uid, status: 'pending' });
     };
