@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Wallet - Premium Earning</title>
+    <!-- Google Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-bg: #f0f2f5;
+            --card-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            --accent-color: #00d2ff;
+            --text-dark: #333;
+            --text-light: #888;
+            --success: #2ecc71;
+            --warning: #f1c40f;
+            --danger: #e74c3c;
+            --white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        body {
+            background: #dfe6e9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            user-select: none;
+        }
+
+        /* Mobile Container */
+        .app-container {
+            width: 100%;
+            max-width: 414px;
+            background: var(--primary-bg);
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+            box-shadow: 0 0 25px rgba(0,0,0,0.15);
+        }
+
+        @media (min-width: 420px) {
+            .app-container {
+                height: 850px;
+                border-radius: 25px;
+                border: 5px solid #fff;
+            }
+        }
+
+        /* Header */
+        .header-nav {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .header-title { font-weight: 700; font-size: 18px; color: var(--text-dark); }
+
+        /* Screens */
+        .screen { display: none; animation: slideIn 0.3s ease-out; padding-bottom: 80px; }
+        .active-screen { display: block; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Premium Card Design (Home) */
+        .wallet-card {
+            margin: 20px;
+            padding: 25px;
+            border-radius: 20px;
+            background: var(--card-gradient);
+            color: white;
+            box-shadow: 0 10px 25px rgba(30, 60, 114, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .wallet-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            transform: rotate(30deg);
+        }
+        .balance-label { font-size: 14px; opacity: 0.8; }
+        .balance-amount { font-size: 36px; font-weight: 700; margin: 5px 0 15px 0; }
+        .user-info-pill {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px; border-radius: 15px;
+            font-size: 12px; display: inline-flex; align-items: center; gap: 5px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Action Grid */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            padding: 0 20px;
+            margin-bottom: 20px;
+        }
+        .action-item {
+            background: white;
+            padding: 15px 5px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            transition: 0.2s; cursor: pointer;
+        }
+        .action-item:active { transform: scale(0.95); }
+        .action-icon {
+            width: 45px; height: 45px;
+            background: #eef2f5;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 8px auto;
+            font-size: 18px; color: #1e3c72;
+        }
+        .action-text { font-size: 11px; font-weight: 600; color: #555; }
+
+        /* Forms */
+        .auth-container { padding: 30px; margin-top: 40px; }
+        .input-group { margin-bottom: 15px; position: relative; }
+        .input-group i.fa-icon { position: absolute; left: 15px; top: 16px; color: #1e3c72; }
+        .input-group .toggle-pass { position: absolute; right: 15px; top: 16px; color: #888; cursor: pointer; }
+        
+        input, select {
+            width: 100%; padding: 14px 40px 14px 45px;
+            border: 1px solid #eee; border-radius: 12px;
+            background: white; font-size: 14px; outline: none; transition: 0.3s;
+        }
+        input:focus { border-color: #1e3c72; box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1); }
+        
+        button.btn-main {
+            width: 100%; padding: 15px;
+            background: var(--card-gradient);
+            color: white; border: none; border-radius: 12px;
+            font-size: 16px; font-weight: 600; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.3);
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+        button.btn-outline {
+            width: 100%; padding: 12px;
+            background: transparent;
+            color: #1e3c72; border: 1px solid #1e3c72; border-radius: 12px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            margin-top: 10px;
+        }
+        button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Lists (History & Team) */
+        .list-container { padding: 0 20px; }
+        .list-item {
+            background: white; padding: 15px; border-radius: 15px;
+            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.02);
+        }
+        .list-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            margin-right: 15px;
+        }
+        .deposit-icon { background: rgba(46, 204, 113, 0.1); color: #2ecc71; }
+        .withdraw-icon { background: rgba(231, 76, 60, 0.1); color: #e74c3c; }
+        .team-icon { background: rgba(52, 152, 219, 0.1); color: #3498db; }
+        .rank-badge { 
+            width: 30px; height: 30px; background: #1e3c72; color: #fff; 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;
+        }
+
+        /* Tabs */
+        .tabs { display: flex; justify-content: center; margin-bottom: 20px; padding: 0 20px; }
+        .tab-btn { padding: 10px 25px; border: 1px solid #1e3c72; border-radius: 25px; background: none; color: #1e3c72; margin: 0 5px; cursor: pointer; font-size: 13px; transition: 0.3s; }
+        .tab-btn.active { background: #1e3c72; color: white; box-shadow: 0 4px 10px rgba(30, 60, 114, 0.3); }
+
+        /* Modals */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 100; backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: white; width: 85%; max-width: 350px;
+            margin: 20% auto; padding: 25px; border-radius: 25px;
+            text-align: center; animation: popUp 0.3s;
+        }
+        @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* Special Pages */
+        .special-page {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; z-index: 200; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 30px;
+        }
+        .special-icon { font-size: 60px; margin-bottom: 20px; color: #1e3c72; }
+
+        /* Profile Styles */
+        .profile-header {
+            text-align: center; padding: 20px; background: white; margin-bottom: 15px; border-radius: 0 0 25px 25px;
+        }
+        .profile-avatar {
+            width: 80px; height: 80px; background: #eef2f5; border-radius: 50%; margin: 0 auto 10px;
+            display: flex; align-items: center; justify-content: center; font-size: 30px; color: #1e3c72;
+            border: 3px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .copy-box {
+            background: #eef2f5; padding: 10px; border-radius: 10px; display: flex; 
+            justify-content: space-between; align-items: center; margin-top: 10px;
+            font-family: monospace; font-size: 13px;
+        }
+
+        /* Utility */
+        .btn-text { background: none; border: none; color: #1e3c72; cursor: pointer; font-weight: 600; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    
+    <!-- SPECIAL PAGES -->
+    <div id="no-internet" class="special-page">
+        <i class="fas fa-wifi special-icon" style="color: var(--danger);"></i>
+        <h2>No Internet</h2>
+        <p>Please check your connection.</p>
+        <button class="btn-main" onclick="location.reload()">Retry</button>
+    </div>
+    
+    <div id="maintenance-page" class="special-page">
+        <i class="fas fa-tools special-icon" style="color: var(--warning);"></i>
+        <h2>Maintenance</h2>
+        <p>App is currently under maintenance.<br>Please try again later.</p>
+    </div>
+
+    <div id="blocked-page" class="special-page">
+        <i class="fas fa-ban special-icon" style="color: var(--danger);"></i>
+        <h2>Account Blocked</h2>
+        <p>Your account has been suspended due to suspicious activity.</p>
+        <button class="btn-text" onclick="openSupport()">Contact Admin</button>
+    </div>
+
+    <!-- 1. AUTH SCREEN (Login/Register) -->
+    <div id="auth-screen" class="screen active-screen">
+        <div style="text-align: center; padding-top: 60px;">
+            <i class="fas fa-gem" style="font-size: 50px; color: #1e3c72;"></i>
+            <h2 style="margin-top: 15px; color: #1e3c72;">Pro Wallet</h2>
+            <p style="color: #888; font-size: 13px;">Secure & Fast Earning</p>
+        </div>
+
+        <div class="auth-container">
+            <!-- Login Form -->
+            <div id="login-box">
+                <h3 style="margin-bottom: 20px;">Login</h3>
+                <div class="input-group">
+                    <i class="fas fa-envelope fa-icon"></i>
+                    <input type="email" id="login-email" placeholder="Email">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock fa-icon"></i>
+                    <input type="password" id="login-pass" placeholder="Password">
+                    <i class="fas fa-eye toggle-pass" onclick="togglePass('login-pass')"></i>
+                </div>
+                <button class="btn-main" id="btn-login" onclick="loginUser()">Login</button>
+                <button class="btn-text" onclick="showReg()">Create Account</button>
+            </div>
+
+            <!-- Register Form -->
+            <div id="reg-box" style="display: none;">
+                <h3 style="margin-bottom: 20px;">Register</h3>
+                <div class="input-group"><i class="fas fa-user fa-icon"></i><input type="text" id="reg-name" placeholder="Full Name"></div>
+                <div class="input-group"><i class="fas fa-envelope fa-icon"></i><input type="email" id="reg-email" placeholder="Email"></div>
+                <div class="input-group">
+                    <i class="fas fa-phone fa-icon"></i>
+                    <input type="number" id="reg-phone" placeholder="Phone (11 digits)" 
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11)">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock fa-icon"></i>
+                    <input type="password" id="reg-pass" placeholder="Password (6+ chars)">
+                    <i class="fas fa-eye toggle-pass" onclick="togglePass('reg-pass')"></i>
+                </div>
+                <!-- REMOVED REFERRAL CODE INPUT FROM HERE AS REQUESTED -->
+                <button class="btn-main" id="btn-reg" onclick="registerUser()">Register</button>
+                <button class="btn-text" onclick="showLogin()">Back to Login</button>
+            </div>
+            <p id="auth-msg" style="color: red; text-align: center; margin-top: 10px; font-size: 12px;"></p>
+        </div>
+    </div>
+
+    <!-- 1.5 NEW REFERRAL SCREEN (First Step After Login) -->
+    <div id="refer-screen" class="screen">
+        <div style="text-align: center; padding: 40px; margin-top: 50px;">
+            <i class="fas fa-users" style="font-size: 50px; color: #1e3c72; margin-bottom: 20px;"></i>
+            <h2 style="color: #333;">Join a Team</h2>
+            <p style="color: #777; margin: 10px 0 30px 0; font-size: 13px;">
+                Enter a valid Referral Code to continue.<br>This is required to activate your wallet.
+            </p>
+            
+            <div class="input-group">
+                <i class="fas fa-code fa-icon"></i>
+                <input type="text" id="final-refer-code" placeholder="Enter Referral Code" style="text-transform: uppercase;">
+            </div>
+            
+            <button class="btn-main" id="btn-verify-ref" onclick="submitReferCode()">Submit Code</button>
+            <button class="btn-text" onclick="logout()" style="color: red; margin-top: 20px;">Logout</button>
+        </div>
+    </div>
+
+    <!-- 2. DEPOSIT PAGE (Second Step) -->
+    <div id="deposit-screen" class="screen">
+        <div class="header-nav">
+            <span class="header-title">Activate Account</span>
+            <i class="fas fa-sign-out-alt" onclick="logout()" style="color: red; cursor: pointer;"></i>
+        </div>
+        <div style="padding: 20px;">
+            <div style="background: white; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+                <p style="color: #666; font-size: 13px; margin-bottom: 10px;">Membership Fee</p>
+                <h1 style="color: #1e3c72; font-size: 40px; font-weight: 700;">৳500</h1>
+                <div style="margin: 20px 0; padding: 15px; background: #f8f9fa; border: 1px dashed #1e3c72; border-radius: 10px;">
+                    <span style="font-size: 12px; color: #888;">Send money to (Bkash/Nagad)</span>
+                    <h3 style="color: #1e3c72; margin-top: 5px;">01700000000</h3>
+                </div>
+            </div>
+
+            <h4 style="margin: 25px 0 15px 0; color: #444;">Submit Details</h4>
+            <div class="input-group"><i class="fas fa-wallet fa-icon"></i>
+                <select id="pay-method" style="padding-left: 45px; width: 100%; border-radius: 12px; height: 50px; border: 1px solid #eee;">
+                    <option value="">Select Method</option>
+                    <option value="Bkash">Bkash</option>
+                    <option value="Nagad">Nagad</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <i class="fas fa-mobile-alt fa-icon"></i>
+                <input type="text" id="pay-number" placeholder="Sender Number"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11)">
+            </div>
+            
+            <div class="input-group">
+                <i class="fas fa-receipt fa-icon"></i>
+                <input type="text" id="pay-trx" placeholder="Transaction ID" 
+                       oninput="this.value = this.value.slice(0, 10)">
+            </div>
+            
+            <button class="btn-main" onclick="submitPayment()">Verify Payment</button>
+        </div>
+    </div>
+
+    <!-- 3. PENDING PAGE (Third Step) -->
+    <div id="pending-screen" class="screen">
+        <div class="status-page" style="text-align: center; padding: 40px; margin-top: 50px;">
+            <div style="width: 80px; height: 80px; background: rgba(241, 196, 15, 0.2); color: var(--warning); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; margin: 0 auto 20px auto;"><i class="fas fa-hourglass-half"></i></div>
+            <h2 style="color: #333;">Verification Pending</h2>
+            <p style="color: #777; margin-top: 10px; line-height: 1.6;">
+                Payment details received.<br>Please wait for admin approval.
+            </p>
+            <div style="margin-top: 30px; background: white; padding: 15px; border-radius: 10px;">
+                <p style="font-size: 12px; color: #aaa;">Status</p>
+                <b style="color: #f1c40f;">UNDER REVIEW</b>
+            </div>
+            <button class="btn-text" onclick="location.reload()" style="margin-top: 40px;">Check Again</button>
+            <button class="btn-text" onclick="logout()" style="color: red; display: block; width: 100%;">Logout</button>
+        </div>
+    </div>
+
+    <!-- 4. DASHBOARD (Final Home Page - Hidden until Active) -->
+    <div id="dashboard-screen" class="screen">
+        <!-- Top Nav -->
+        <div class="header-nav" style="background: transparent; box-shadow: none; padding-bottom: 0;">
+            <div>
+                <p style="font-size: 12px; color: #666;">Welcome back,</p>
+                <h3 id="dash-name" style="color: #1e3c72;">User</h3>
+            </div>
+            <div onclick="openProfile()" style="background: white; padding: 8px 12px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer;">
+                <i class="fas fa-user-circle" style="color: #1e3c72; font-size: 20px;"></i>
+            </div>
+        </div>
+
+        <!-- Premium Wallet Card -->
+        <div class="wallet-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <span class="balance-label">Total Balance</span>
+                    <h1 class="balance-amount">৳ <span id="dash-balance">0</span></h1>
+                </div>
+                <i class="fas fa-chess-king" style="font-size: 30px; opacity: 0.3;"></i>
+            </div>
+            <div style="margin-top: 10px; display: flex; gap: 10px;">
+                <div class="user-info-pill"><i class="fas fa-check-circle" style="color: #2ecc71;"></i> Active</div>
+                <div class="user-info-pill">Ref: <span id="dash-refer">...</span></div>
+            </div>
+        </div>
+
+        <!-- Action Grid -->
+        <h4 style="margin: 0 0 15px 20px; color: #444;">Quick Services</h4>
+        <div class="action-grid">
+            <div class="action-item" onclick="openProfile()">
+                <div class="action-icon"><i class="fas fa-user-cog"></i></div>
+                <span class="action-text">Profile</span>
+            </div>
+            <div class="action-item" onclick="openInvite()">
+                <div class="action-icon"><i class="fas fa-share-alt"></i></div>
+                <span class="action-text">Invite</span>
+            </div>
+             <div class="action-item" onclick="openWithdrawModal()">
+                <div class="action-icon"><i class="fas fa-hand-holding-usd"></i></div>
+                <span class="action-text">Withdraw</span>
+            </div>
+            <div class="action-item" onclick="openLeaderboard()">
+                <div class="action-icon"><i class="fas fa-trophy"></i></div>
+                <span class="action-text">Leaders</span>
+            </div>
+            <div class="action-item" onclick="openTeam()">
+                <div class="action-icon"><i class="fas fa-users"></i></div>
+                <span class="action-text">Team</span>
+            </div>
+            <div class="action-item" onclick="openSupport()">
+                <div class="action-icon"><i class="fas fa-headset"></i></div>
+                <span class="action-text">Support</span>
+            </div>
+        </div>
+
+        <!-- Recent Activity Header -->
+        <div style="padding: 0 20px;">
+            <h4 style="color: #444; margin-bottom: 10px;">Recent Notice</h4>
+            <div style="background: white; padding: 15px; border-radius: 15px; font-size: 12px; color: #666; border-left: 4px solid #1e3c72;">
+                Invite friends and check your Profile to change password or view history.
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. LEADERBOARD SCREEN -->
+    <div id="leaderboard-screen" class="screen">
+        <div class="header-nav">
+            <i class="fas fa-arrow-left" onclick="showScreen('dashboard-screen')" style="cursor: pointer;"></i>
+            <span class="header-title">Top 20 Leaders</span>
+            <div style="width: 20px;"></div>
+        </div>
+        <div id="leader-list" class="list-container" style="margin-top: 10px;">
+            <p style="text-align: center; color: #999; margin-top: 50px;">Loading...</p>
+        </div>
+    </div>
+
+    <!-- 6. TEAM SCREEN -->
+    <div id="team-screen" class="screen">
+        <div class="header-nav">
+            <i class="fas fa-arrow-left" onclick="showScreen('dashboard-screen')" style="cursor: pointer;"></i>
+            <span class="header-title">My Team</span>
+            <div style="width: 20px;"></div>
+        </div>
+        <div style="padding: 20px; text-align: center;">
+            <p style="color: #666; font-size: 13px;">Your Refer Code</p>
+            <h2 id="team-ref-code" onclick="copyText('team-ref-code')" style="color: #1e3c72; letter-spacing: 2px; cursor: pointer;" title="Click to copy">LOADING</h2>
+        </div>
+        <h4 style="margin: 10px 0 15px 20px; color: #444;">Referred Users</h4>
+        <div id="team-list" class="list-container">
+            <p style="text-align: center; color: #999; margin-top: 30px;">Loading team...</p>
+        </div>
+    </div>
+
+    <!-- 7. PROFILE SCREEN -->
+    <div id="profile-screen" class="screen">
+        <div class="header-nav">
+            <i class="fas fa-arrow-left" onclick="showScreen('dashboard-screen')" style="cursor: pointer;"></i>
+            <span class="header-title">My Profile</span>
+            <div style="width: 20px;"></div>
+        </div>
+
+        <div class="profile-header">
+            <div class="profile-avatar"><i class="fas fa-user"></i></div>
+            <h3 id="profile-name">User Name</h3>
+            <p id="profile-phone" style="font-size: 13px; color: #888;">01700000000</p>
+            <p id="profile-email" style="font-size: 13px; color: #888;">user@mail.com</p>
+        </div>
+
+        <!-- Password Change Section -->
+        <div style="padding: 0 20px; margin-bottom: 20px;">
+            <button class="btn-outline" onclick="toggleElement('pass-change-form')"><i class="fas fa-key"></i> Change Password</button>
+            <div id="pass-change-form" style="display: none; margin-top: 15px; background: white; padding: 15px; border-radius: 15px;">
+                <div class="input-group">
+                    <i class="fas fa-lock fa-icon"></i>
+                    <input type="password" id="old-pass" placeholder="Old Password">
+                </div>
+                <div class="input-group" style="margin-bottom: 5px;">
+                    <i class="fas fa-lock fa-icon"></i>
+                    <input type="password" id="new-pass" placeholder="New Password">
+                </div>
+                <button class="btn-main" id="btn-change-pass" onclick="changeUserPassword()">Update Password</button>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <h4 style="margin: 0 0 10px 20px; color: #444;">Transaction History</h4>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchHistory('deposit')">Deposit</button>
+            <button class="tab-btn" onclick="switchHistory('withdraw')">Withdraw</button>
+        </div>
+        
+        <div id="history-list" class="list-container">
+            <!-- Content loaded via JS -->
+            <p style="text-align: center; color: #999;">Loading...</p>
+        </div>
+    </div>
+
+    <!-- 8. INVITE SCREEN -->
+    <div id="invite-screen" class="screen">
+        <div class="header-nav">
+            <i class="fas fa-arrow-left" onclick="showScreen('dashboard-screen')" style="cursor: pointer;"></i>
+            <span class="header-title">Invite Friends</span>
+            <div style="width: 20px;"></div>
+        </div>
+
+        <div style="padding: 30px 20px; text-align: center;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=PROWALLET" id="invite-qr" style="border-radius: 10px; margin-bottom: 20px; border: 5px solid white;">
+            
+            <h3 style="color: #1e3c72;">Refer & Earn</h3>
+            <p style="color: #666; font-size: 13px; margin: 10px 0 20px 0;">Share your link and earn bonus when your friends join!</p>
+
+            <div style="text-align: left;">
+                <label style="font-size: 12px; color: #888; margin-left: 5px;">Referral Link</label>
+                <div class="copy-box">
+                    <span id="invite-link" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;">...</span>
+                    <i class="fas fa-copy" onclick="copyText('invite-link')" style="color: #1e3c72; cursor: pointer; padding: 5px;"></i>
+                </div>
+            </div>
+
+            <div style="text-align: left; margin-top: 15px;">
+                <label style="font-size: 12px; color: #888; margin-left: 5px;">Referral Code</label>
+                <div class="copy-box">
+                    <span id="invite-code" style="font-weight: bold; letter-spacing: 1px;">...</span>
+                    <i class="fas fa-copy" onclick="copyText('invite-code')" style="color: #1e3c72; cursor: pointer; padding: 5px;"></i>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <button class="btn-main" id="btn-dl-app" onclick="downloadApp()" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <i class="fab fa-android" style="font-size: 20px;"></i> Download App
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    
+    <!-- Support Modal -->
+    <div id="support-modal" class="modal">
+        <div class="modal-content">
+            <i class="fas fa-headset" style="font-size: 40px; color: #1e3c72; margin-bottom: 15px;"></i>
+            <h3>Help Center</h3>
+            <p style="font-size: 12px; color: #777; margin-bottom: 20px;">How can we help you?</p>
+            
+            <button class="btn-main" onclick="window.open('https://t.me/YOUR_CHANNEL_LINK')" style="background: #229ED9; margin-bottom: 10px;">
+                <i class="fab fa-telegram-plane"></i> Join Channel
+            </button>
+            <button class="btn-text" onclick="closeModal('support-modal')">Close</button>
+        </div>
+    </div>
+
+    <!-- Withdraw Modal -->
+    <div id="withdraw-modal" class="modal">
+        <div class="modal-content">
+            <h3>Withdraw Money</h3>
+            <p style="font-size: 12px; color: #888;">Minimum limit: ৳200</p>
+            <div style="margin-top: 20px; text-align: left;">
+                <input type="number" id="w-amount" placeholder="Amount (Numbers only)" 
+                       style="margin-bottom: 10px;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                
+                <input type="number" id="w-method" placeholder="Bkash/Nagad Number" 
+                       style="margin-bottom: 10px;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+
+                <div class="input-group" style="margin-bottom: 0;">
+                    <i class="fas fa-lock fa-icon"></i>
+                    <input type="password" id="w-pass" placeholder="Confirm Password">
+                </div>
+            </div>
+            <button class="btn-main" id="btn-withdraw" onclick="processWithdraw()">Confirm Request</button>
+            <button class="btn-text" onclick="closeModal('withdraw-modal')">Cancel</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- FIREBASE REALTIME DATABASE LOGIC -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { getDatabase, ref, set, update, onValue, get, child, push, query, orderByChild, equalTo, limitToLast, runTransaction } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+    const firebaseConfig = {
+            apiKey: "AIzaSyD9Umavm907AQdAFqYXT4wotrTuqi2nh3s",
+            authDomain: "pro-68344-default-rtdb.firebaseio.com",
+            projectId: "pro-68344",
+            storageBucket: "pro-68344.firebasestorage.app",
+            messagingSenderId: "220248111668",
+            appId: "1:220248111668:android:c692486c4f471c256d2861",
+            databaseURL: "https://pro-68344-default-rtdb.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+    let currentUserData = null;
+    let userUnsubscribe = null; 
+
+    // --- INTERNET CHECK ---
+    function updateOnlineStatus() {
+        if (!navigator.onLine) {
+            document.getElementById('no-internet').style.display = 'flex';
+        } else {
+            document.getElementById('no-internet').style.display = 'none';
+        }
+    }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+
+    // --- UTILITIES ---
+    window.togglePass = (id) => {
+        const input = document.getElementById(id);
+        input.type = input.type === "password" ? "text" : "password";
+    }
+
+    window.toggleElement = (id) => {
+        const el = document.getElementById(id);
+        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+
+    const setLoading = (btnId, loading, text = "Processing...") => {
+        const btn = document.getElementById(btnId);
+        if(!btn) return;
+        if(loading) {
+            if (!btn.dataset.original) btn.dataset.original = btn.innerText;
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${text}`;
+        } else {
+            btn.disabled = false;
+            btn.innerText = btn.dataset.original || "Submit";
+        }
+    };
+
+    window.copyText = (elementId) => {
+        const text = document.getElementById(elementId).innerText;
+        if(text === "..." || text === "LOADING") return;
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Copied!");
+        });
+    };
+
+    // --- NAVIGATION ---
+    window.showLogin = () => { document.getElementById('login-box').style.display = 'block'; document.getElementById('reg-box').style.display = 'none'; }
+    window.showReg = () => { document.getElementById('login-box').style.display = 'none'; document.getElementById('reg-box').style.display = 'block'; }
+    window.showScreen = (id) => {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+        document.getElementById(id).classList.add('active-screen');
+    };
+    window.openSupport = () => document.getElementById('support-modal').style.display = 'block';
+    window.openWithdrawModal = () => document.getElementById('withdraw-modal').style.display = 'block';
+    window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+
+    // --- APP MAINTENANCE & DOWNLOAD LINK ---
+    let appDownloadUrl = "#";
+    onValue(ref(db, 'admin/settings'), (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            if (data.maintenance === true) document.getElementById('maintenance-page').style.display = 'flex';
+            else document.getElementById('maintenance-page').style.display = 'none';
+            
+            if (data.app_link) appDownloadUrl = data.app_link;
+        }
+    });
+
+    window.downloadApp = () => {
+        if(appDownloadUrl !== "#") window.location.href = appDownloadUrl;
+        else alert("Download link coming soon!");
+    }
+
+    // --- AUTH STATE & AUTO LOGIN ---
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            if(userUnsubscribe) { userUnsubscribe(); }
+            const userRef = ref(db, 'users/' + user.uid);
+            userUnsubscribe = onValue(userRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    currentUserData = data;
+                    if (currentUserData.isBlocked) {
+                        document.getElementById('blocked-page').style.display = 'flex';
+                        setLoading('btn-login', false);
+                        return;
+                    } else {
+                        document.getElementById('blocked-page').style.display = 'none';
+                    }
+                    localStorage.setItem('pro_wallet_device_id', user.uid);
+                    handleUserStatus(currentUserData);
+                    setLoading('btn-login', false);
+                } else {
+                    signOut(auth);
+                }
+            });
+        } else {
+            showScreen('auth-screen');
+            const loginBtn = document.getElementById('btn-login');
+            if(loginBtn) {
+                setLoading('btn-login', false);
+                loginBtn.innerText = "Login";
+            }
+        }
+    });
+
+    // --- STRICT USER STATUS HANDLER ---
+    // This function enforces the flow: Refer Code -> Deposit -> Pending -> Active
+    function handleUserStatus(data) {
+        
+        // 1. If Account is Active -> Show Dashboard
+        if (data.status === 'active') {
+            document.getElementById('dash-balance').innerText = data.balance || 0;
+            document.getElementById('dash-name').innerText = data.name;
+            document.getElementById('dash-refer').innerText = data.referCode;
+            showScreen('dashboard-screen');
+            return;
+        } 
+        
+        // 2. If Account is NOT active (Pending/New)
+        // Step A: Check if Referral Code is used
+        if (!data.referredBy || data.referredBy === "") {
+            // Dashboard remains hidden, show Refer Screen
+            showScreen('refer-screen');
+        } 
+        // Step B: If Referred, Check if Payment is done
+        else if (!data.paymentInfo) {
+            showScreen('deposit-screen');
+        } 
+        // Step C: If Payment done, wait for admin
+        else {
+            showScreen('pending-screen');
+        }
+    }
+
+    // --- REGISTRATION LOGIC (Without Refer Code) ---
+    window.registerUser = async () => {
+        const existingDevice = localStorage.getItem('pro_wallet_device_id');
+        if (existingDevice) { alert("Account Limit Reached!"); return; }
+
+        const name = document.getElementById('reg-name').value;
+        const email = document.getElementById('reg-email').value;
+        const pass = document.getElementById('reg-pass').value;
+        const phone = document.getElementById('reg-phone').value;
+
+        if(!name || !email || !pass || !phone) { alert("Fill all fields"); return; }
+
+        setLoading('btn-reg', true, "Creating...");
+        try {
+            const cred = await createUserWithEmailAndPassword(auth, email, pass);
+            const myReferCode = (name.substring(0,3) + phone.slice(-4)).toUpperCase();
+            
+            // Initial Data: referredBy is EMPTY
+            await set(ref(db, 'users/' + cred.user.uid), {
+                name, email, phone, uid: cred.user.uid,
+                balance: 0, status: 'pending', referCode: myReferCode, 
+                referredBy: "", // Explicitly empty to force Refer Screen later
+                refCount: 0, isBlocked: false, createdAt: Date.now()
+            });
+            localStorage.setItem('pro_wallet_device_id', cred.user.uid);
+            // No alert needed, onAuthStateChanged will detect login and send to Refer Screen
+        } catch (e) { alert(e.message); setLoading('btn-reg', false); }
+    };
+
+    // --- SUBMIT REFERRAL CODE (Step 1 after Login) ---
+    window.submitReferCode = async () => {
+        const codeInput = document.getElementById('final-refer-code').value.trim().toUpperCase();
+        if(!codeInput) { alert("Please enter a code"); return; }
+        
+        if(codeInput === currentUserData.referCode) {
+            alert("You cannot refer yourself!");
+            return;
+        }
+
+        setLoading('btn-verify-ref', true, "Verifying...");
+
+        try {
+            const usersRef = ref(db, 'users');
+            const q = query(usersRef, orderByChild('referCode'), equalTo(codeInput));
+            const snapshot = await get(q);
+
+            if (!snapshot.exists()) { 
+                throw new Error("Invalid Referral Code! Please check again."); 
+            }
+            
+            const referrerUid = Object.keys(snapshot.val())[0];
+
+            // 1. Increment Referrer Count
+            const referrerRef = ref(db, 'users/' + referrerUid + '/refCount');
+            await runTransaction(referrerRef, (cnt) => (cnt || 0) + 1);
+
+            // 2. Update Current User
+            await update(ref(db, 'users/' + auth.currentUser.uid), {
+                referredBy: codeInput
+            });
+
+            // Success! handleUserStatus will auto-switch to Deposit screen now
+            
+        } catch (e) {
+            alert(e.message);
+        } finally {
+            setLoading('btn-verify-ref', false, "Submit Code");
+        }
+    }
+
+    window.loginUser = async () => {
+        const email = document.getElementById('login-email').value;
+        const pass = document.getElementById('login-pass').value;
+        if(!email || !pass) return;
+        setLoading('btn-login', true);
+        try { await signInWithEmailAndPassword(auth, email, pass); } 
+        catch (e) { document.getElementById('auth-msg').innerText = e.message; setLoading('btn-login', false); }
+    };
+
+    window.logout = () => signOut(auth);
+
+    // --- DEPOSIT (Step 2) ---
+    window.submitPayment = async () => {
+        const method = document.getElementById('pay-method').value;
+        const num = document.getElementById('pay-number').value;
+        const trx = document.getElementById('pay-trx').value;
+        
+        if(!method || !num || !trx) { alert("Fill all details"); return; }
+
+        const pInfo = { method, sender: num, trxID: trx, amount: 500, time: new Date().toDateString() };
+
+        // Save to User Profile (This triggers Pending Screen)
+        await update(ref(db, 'users/' + auth.currentUser.uid), { paymentInfo: pInfo });
+        
+        // Save to History Log
+        const newDepRef = push(ref(db, 'deposits'));
+        await set(newDepRef, { ...pInfo, uid: auth.currentUser.uid, status: 'pending' });
+    };
+
+    // --- LEADERBOARD ---
+    window.openLeaderboard = async () => {
+        showScreen('leaderboard-screen');
+        const list = document.getElementById('leader-list');
+        list.innerHTML = '<p style="text-align:center;">Loading...</p>';
+        try {
+            const q = query(ref(db, 'users'), orderByChild('refCount'), limitToLast(20));
+            const snapshot = await get(q);
+            let usersArray = [];
+            snapshot.forEach((c) => usersArray.push(c.val()));
+            usersArray.reverse();
+            let html = ''; let rank = 1;
+            usersArray.forEach(u => {
+                html += `<div class="list-item">
+                    <div style="display:flex;align-items:center;">
+                        <div class="rank-badge">${rank++}</div>
+                        <div style="margin-left:15px;">
+                            <div style="font-weight:600;">${u.name}</div>
+                            <div style="font-size:11px;color:#888;">${u.referCode}</div>
+                        </div>
+                    </div>
+                    <div style="font-weight:bold;color:#1e3c72;">${u.refCount||0} Refs</div>
+                </div>`;
+            });
+            list.innerHTML = html || '<p style="text-align:center;">No data.</p>';
+        } catch (e) { list.innerHTML = 'Error loading.'; }
+    }
+
+    // --- TEAM ---
+    window.openTeam = async () => {
+        showScreen('team-screen');
+        document.getElementById('team-ref-code').innerText = currentUserData.referCode;
+        const list = document.getElementById('team-list');
+        list.innerHTML = "Loading...";
+        const q = query(ref(db, 'users'), orderByChild('referredBy'), equalTo(currentUserData.referCode));
+        const snapshot = await get(q);
+        if(!snapshot.exists()) { list.innerHTML = '<p style="text-align:center;">No members.</p>'; return; }
+        let html = '';
+        snapshot.forEach(d => {
+            const m = d.val();
+            html += `<div class="list-item">
+                <div style="display:flex;align-items:center;">
+                    <div class="list-icon team-icon"><i class="fas fa-user"></i></div>
+                    <div><div style="font-weight:600;">${m.name}</div><div style="font-size:12px;">${m.status}</div></div>
+                </div>
+            </div>`;
+        });
+        list.innerHTML = html;
+    };
+
+    // --- INVITE ---
+    window.openInvite = () => {
+        showScreen('invite-screen');
+        const code = currentUserData.referCode;
+        const link = window.location.protocol + '//' + window.location.host + window.location.pathname + '?ref=' + code;
+        
+        document.getElementById('invite-code').innerText = code;
+        document.getElementById('invite-link').innerText = link;
+        document.getElementById('invite-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(link)}`;
+    }
+
+    // --- PROFILE ---
+    window.openProfile = () => {
+        showScreen('profile-screen');
+        document.getElementById('profile-name').innerText = currentUserData.name;
+        document.getElementById('profile-email').innerText = currentUserData.email;
+        document.getElementById('profile-phone').innerText = currentUserData.phone;
+        document.getElementById('pass-change-form').style.display = 'none';
+        window.switchHistory('deposit');
+    }
+
+    window.changeUserPassword = async () => {
+        const oldPass = document.getElementById('old-pass').value;
+        const newPass = document.getElementById('new-pass').value;
+        if(!oldPass || !newPass) { alert("Enter both passwords"); return; }
+        if(newPass.length < 6) { alert("New password too short"); return; }
+
+        setLoading('btn-change-pass', true);
+        try {
+            const credential = EmailAuthProvider.credential(auth.currentUser.email, oldPass);
+            await reauthenticateWithCredential(auth.currentUser, credential);
+            await updatePassword(auth.currentUser, newPass);
+            alert("Password Changed! Please login again.");
+            signOut(auth);
+        } catch (e) {
+            alert("Error: " + e.message);
+            setLoading('btn-change-pass', false);
+        }
+    }
+
+    // Transaction History Logic
+    window.switchHistory = async (type) => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        const list = document.getElementById('history-list');
+        list.innerHTML = '<p style="text-align:center;">Loading...</p>';
+
+        try {
+            let html = '';
+            if (type === 'withdraw') {
+                const q = query(ref(db, 'withdraw_requests'), orderByChild('uid'), equalTo(auth.currentUser.uid));
+                const snap = await get(q);
+                if(snap.exists()) {
+                    let items = [];
+                    snap.forEach(c => items.push(c.val()));
+                    items.reverse().forEach(i => {
+                        html += `<div class="list-item">
+                            <div style="display:flex;align-items:center;">
+                                <div class="list-icon withdraw-icon"><i class="fas fa-arrow-up"></i></div>
+                                <div><div style="font-weight:600;">Withdraw</div><div style="font-size:12px;">${i.method}</div></div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-weight:bold;color:#e74c3c;">-৳${i.amount}</div>
+                                <div style="font-size:11px;color:#888;">${i.status}</div>
+                            </div>
+                        </div>`;
+                    });
+                } else html = '<p style="text-align:center; color:#999; margin-top:20px;">No withdrawals yet.</p>';
+            } 
+            else { 
+                const q = query(ref(db, 'deposits'), orderByChild('uid'), equalTo(auth.currentUser.uid));
+                const snap = await get(q);
+                
+                if(snap.exists()) {
+                    let items = [];
+                    snap.forEach(c => items.push(c.val()));
+                    items.reverse().forEach(i => {
+                        html += `<div class="list-item">
+                            <div style="display:flex;align-items:center;">
+                                <div class="list-icon deposit-icon"><i class="fas fa-arrow-down"></i></div>
+                                <div><div style="font-weight:600;">Deposit</div><div style="font-size:12px;">${i.method}</div></div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-weight:bold;color:#2ecc71;">+৳${i.amount}</div>
+                                <div style="font-size:11px;color:#888;">${i.status || 'Success'}</div>
+                            </div>
+                        </div>`;
+                    });
+                } else {
+                     if(currentUserData.paymentInfo) {
+                        const p = currentUserData.paymentInfo;
+                        html = `<div class="list-item">
+                            <div style="display:flex;align-items:center;">
+                                <div class="list-icon deposit-icon"><i class="fas fa-arrow-down"></i></div>
+                                <div><div style="font-weight:600;">Deposit</div><div style="font-size:12px;">${p.method}</div></div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-weight:bold;color:#2ecc71;">+৳${p.amount}</div>
+                                <div style="font-size:11px;color:#888;">Initial</div>
+                            </div>
+                        </div>`;
+                     } else {
+                        html = '<p style="text-align:center; color:#999; margin-top:20px;">No deposits found.</p>';
+                     }
+                }
+            }
+            list.innerHTML = html;
+        } catch(e) { console.error(e); list.innerHTML = "Error loading history."; }
+    }
+
+    // --- WITHDRAW ---
+    window.processWithdraw = async () => {
+        const amountStr = document.getElementById('w-amount').value;
+        const method = document.getElementById('w-method').value;
+        const pass = document.getElementById('w-pass').value;
+
+        if (!/^\d+$/.test(amountStr)) { alert("Amount must be a number"); return; }
+        const amount = parseInt(amountStr);
+
+        if(amount < 200) { alert("Minimum 200 Taka"); return; }
+        if(currentUserData.balance < amount) { alert("Insufficient Balance"); return; }
+        if(!method || !pass) { alert("Fill all fields"); return; }
+
+        setLoading('btn-withdraw', true);
+        try {
+            const credential = EmailAuthProvider.credential(auth.currentUser.email, pass);
+            await reauthenticateWithCredential(auth.currentUser, credential);
+            
+            const balanceRef = ref(db, 'users/' + auth.currentUser.uid + '/balance');
+            await runTransaction(balanceRef, (bal) => (bal >= amount ? bal - amount : undefined));
+
+            await push(ref(db, 'withdraw_requests'), {
+                uid: auth.currentUser.uid, amount, method, status: 'pending', requestDate: Date.now()
+            });
+            alert("Request Submitted!");
+            closeModal('withdraw-modal');
+            document.getElementById('w-pass').value = '';
+        } catch(e) { alert(e.code === 'auth/wrong-password' ? "Wrong Password" : e.message); } 
+        finally { setLoading('btn-withdraw', false); }
+    };
+</script>
+
+</body>
+</html>
