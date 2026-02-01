@@ -38,6 +38,7 @@
             align-items: center;
             min-height: 100vh;
             user-select: none;
+            overscroll-behavior-y: contain; /* Prevents pull-to-refresh on mobile */
         }
 
         /* Mobile Container */
@@ -79,30 +80,67 @@
         .active-screen { display: block; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Premium Card Design (Home) */
+        /* --- WALLET CARD DESIGN --- */
         .wallet-card {
             margin: 20px;
             padding: 25px;
-            border-radius: 20px;
-            background: var(--card-gradient);
+            border-radius: 25px;
+            background: linear-gradient(120deg, #152e5a 0%, #2a5298 60%, #00d2ff 100%);
             color: white;
-            box-shadow: 0 10px 25px rgba(30, 60, 114, 0.4);
+            box-shadow: 0 15px 35px rgba(30, 60, 114, 0.4);
             position: relative;
             overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.15);
         }
+        /* Circles for design */
         .wallet-card::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
-            transform: rotate(30deg);
+            content: ''; position: absolute; top: -50px; right: -50px;
+            width: 180px; height: 180px;
+            background: rgba(255,255,255,0.1); border-radius: 50%;
+            z-index: 1;
         }
-        .balance-label { font-size: 14px; opacity: 0.8; }
-        .balance-amount { font-size: 36px; font-weight: 700; margin: 5px 0 15px 0; }
+        .wallet-card::after {
+            content: ''; position: absolute; bottom: -30px; left: -30px;
+            width: 120px; height: 120px;
+            background: rgba(255,255,255,0.1); border-radius: 50%;
+            z-index: 1;
+        }
+        
+        .wallet-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .balance-label { 
+            font-size: 12px; 
+            opacity: 0.9; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            color: #dbeeff;
+        }
+        .balance-amount { 
+            font-size: 40px; 
+            font-weight: 700; 
+            margin: 5px 0 15px 0; 
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
         .user-info-pill {
-            background: rgba(255,255,255,0.2);
-            padding: 5px 12px; border-radius: 15px;
-            font-size: 12px; display: inline-flex; align-items: center; gap: 5px;
-            backdrop-filter: blur(5px);
+            background: rgba(255,255,255,0.15);
+            padding: 6px 14px; border-radius: 20px;
+            font-size: 11px; display: inline-flex; align-items: center; gap: 6px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            font-weight: 500;
         }
+        
+        .card-chip {
+            font-size: 35px;
+            color: rgba(255,255,255,0.6);
+            display: flex;
+            align-items: center;
+        }
+        /* --- END DESIGN --- */
 
         /* Action Grid */
         .action-grid {
@@ -191,6 +229,93 @@
         .tab-btn { padding: 10px 25px; border: 1px solid #1e3c72; border-radius: 25px; background: none; color: #1e3c72; margin: 0 5px; cursor: pointer; font-size: 13px; transition: 0.3s; }
         .tab-btn.active { background: #1e3c72; color: white; box-shadow: 0 4px 10px rgba(30, 60, 114, 0.3); }
 
+        /* --- PREMIUM BANNER CARDS (NEW 2.0 STYLE) --- */
+        .gift-card {
+            border-radius: 20px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            min-height: 110px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+            transition: transform 0.2s;
+        }
+        .gift-card:active { transform: scale(0.98); }
+
+        /* Background Gradients */
+        .card-bronze { background: linear-gradient(135deg, #d38312 0%, #a83279 100%); }
+        .card-silver { background: linear-gradient(135deg, #434343 0%, #000000 100%); }
+        .card-gold   { background: linear-gradient(135deg, #f12711 0%, #f5af19 100%); }
+        .card-platinum { background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); }
+        .card-diamond { background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%); }
+
+        /* Faded Background Icon */
+        .card-bg-icon {
+            position: absolute;
+            right: -15px;
+            bottom: -20px;
+            font-size: 100px;
+            opacity: 0.15;
+            transform: rotate(-10deg);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .gift-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .gift-title { font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .gift-subtitle { font-size: 11px; opacity: 0.9; margin-top: 2px; }
+        
+        .card-badge {
+            background: rgba(255,255,255,0.25);
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 10px;
+            backdrop-filter: blur(5px);
+            margin-top: 5px;
+            display: inline-block;
+        }
+
+        /* Buttons inside Card */
+        .btn-card-action {
+            background: white;
+            color: #333;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 12px;
+            font-weight: 700;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            min-width: 90px;
+        }
+        .btn-card-action.locked {
+            background: rgba(0,0,0,0.4);
+            color: rgba(255,255,255,0.8);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .btn-card-action.pending {
+            background: #FF9800;
+            color: white;
+        }
+        .btn-card-action.done {
+            background: #4CAF50;
+            color: white;
+        }
+
+        /* --- END NEW CARD DESIGN --- */
+
         /* Modals */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -202,6 +327,35 @@
             text-align: center; animation: popUp 0.3s;
         }
         @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* AD POPUP SPECIFIC STYLE */
+        .ad-modal-content {
+            background: white;
+            width: 340px; 
+            padding: 10px;
+            border-radius: 10px;
+            position: relative;
+            margin: 30% auto;
+            text-align: center;
+        }
+        .close-ad-btn {
+            position: absolute;
+            top: -15px;
+            right: -10px;
+            background: red;
+            color: white;
+            border: 2px solid white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
 
         /* Special Pages */
         .special-page {
@@ -296,7 +450,6 @@
                     <input type="password" id="reg-pass" placeholder="Password (6+ chars)">
                     <i class="fas fa-eye toggle-pass" onclick="togglePass('reg-pass')"></i>
                 </div>
-                <!-- REMOVED REFERRAL CODE INPUT FROM HERE AS REQUESTED -->
                 <button class="btn-main" id="btn-reg" onclick="registerUser()">Register</button>
                 <button class="btn-text" onclick="showLogin()">Back to Login</button>
             </div>
@@ -304,13 +457,13 @@
         </div>
     </div>
 
-    <!-- 1.5 NEW REFERRAL SCREEN (First Step After Login) -->
+    <!-- 1.5 NEW REFERRAL SCREEN (MANDATORY) -->
     <div id="refer-screen" class="screen">
         <div style="text-align: center; padding: 40px; margin-top: 50px;">
             <i class="fas fa-users" style="font-size: 50px; color: #1e3c72; margin-bottom: 20px;"></i>
             <h2 style="color: #333;">Join a Team</h2>
             <p style="color: #777; margin: 10px 0 30px 0; font-size: 13px;">
-                Enter a valid Referral Code to continue.<br>This is required to activate your wallet.
+                Enter a valid Referral Code to continue.<br><b>Without a code, you cannot proceed.</b>
             </p>
             
             <div class="input-group">
@@ -318,7 +471,7 @@
                 <input type="text" id="final-refer-code" placeholder="Enter Referral Code" style="text-transform: uppercase;">
             </div>
             
-            <button class="btn-main" id="btn-verify-ref" onclick="submitReferCode()">Submit Code</button>
+            <button class="btn-main" id="btn-verify-ref" onclick="submitReferCode()">Verify & Continue</button>
             <button class="btn-text" onclick="logout()" style="color: red; margin-top: 20px;">Logout</button>
         </div>
     </div>
@@ -373,7 +526,8 @@
             <div style="width: 80px; height: 80px; background: rgba(241, 196, 15, 0.2); color: var(--warning); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; margin: 0 auto 20px auto;"><i class="fas fa-hourglass-half"></i></div>
             <h2 style="color: #333;">Verification Pending</h2>
             <p style="color: #777; margin-top: 10px; line-height: 1.6;">
-                Payment details received.<br>Please wait for admin approval.
+                Payment details received.<br>Please wait for admin approval.<br>
+                <span style="font-size: 11px; color: #1e3c72;">Referral bonus will be active after approval.</span>
             </p>
             <div style="margin-top: 30px; background: white; padding: 15px; border-radius: 10px;">
                 <p style="font-size: 12px; color: #aaa;">Status</p>
@@ -397,18 +551,28 @@
             </div>
         </div>
 
-        <!-- Premium Wallet Card -->
+        <!-- NEW DESIGNED WALLET CARD -->
         <div class="wallet-card">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                <div>
-                    <span class="balance-label">Total Balance</span>
-                    <h1 class="balance-amount">৳ <span id="dash-balance">0</span></h1>
+            <!-- Content Wrapper -->
+            <div class="wallet-content">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <span class="balance-label"><i class="fas fa-wallet" style="margin-right: 5px;"></i> Available Balance</span>
+                        <h1 class="balance-amount">৳ <span id="dash-balance">0</span></h1>
+                    </div>
+                    <!-- Decorative Chip Icon -->
+                    <div class="card-chip">
+                        <i class="fab fa-cc-visa"></i>
+                    </div>
                 </div>
-                <i class="fas fa-chess-king" style="font-size: 30px; opacity: 0.3;"></i>
-            </div>
-            <div style="margin-top: 10px; display: flex; gap: 10px;">
-                <div class="user-info-pill"><i class="fas fa-check-circle" style="color: #2ecc71;"></i> Active</div>
-                <div class="user-info-pill">Ref: <span id="dash-refer">...</span></div>
+                
+                <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
+                    <div style="display: flex; gap: 8px;">
+                         <div class="user-info-pill"><i class="fas fa-check-circle" style="color: #2ecc71;"></i> Active</div>
+                         <div class="user-info-pill"><i class="fas fa-id-card"></i> Ref: <span id="dash-refer">...</span></div>
+                    </div>
+                    <i class="fas fa-wifi" style="transform: rotate(90deg); color: rgba(255,255,255,0.5);"></i>
+                </div>
             </div>
         </div>
 
@@ -445,27 +609,54 @@
         <div style="padding: 0 20px;">
             <h4 style="color: #444; margin-bottom: 10px;">Recent Notice</h4>
             <div style="background: white; padding: 15px; border-radius: 15px; font-size: 12px; color: #666; border-left: 4px solid #1e3c72;">
-                Invite friends and check your Profile to change password or view history.
+                Invite friends and earn <b style="color: #1e3c72;">৳<span id="notice-bonus-amount">--</span></b> after their first deposit!
             </div>
         </div>
+        
+        <!-- BANNER AD PLACEMENT (DYNAMIC) -->
+        <div style="text-align: center; margin: 20px 0;">
+            <div id="banner-container" style="display: inline-block;">
+                <!-- Ads will be injected here via JS from Firebase -->
+                <span style="font-size: 10px; color: #ccc;">Ads</span>
+            </div>
+        </div>
+
     </div>
 
-    <!-- 5. LEADERBOARD SCREEN -->
+    <!-- 5. LEADERBOARD SCREEN (UPDATED WITH PREMIUM CARDS) -->
     <div id="leaderboard-screen" class="screen">
         <div class="header-nav">
-            <i class="fas fa-arrow-left" onclick="showScreen('dashboard-screen')" style="cursor: pointer;"></i>
-            <span class="header-title">Top 20 Leaders</span>
+            <i class="fas fa-arrow-left" onclick="goBack()" style="cursor: pointer;"></i>
+            <span class="header-title">Ranking & Rewards</span>
             <div style="width: 20px;"></div>
         </div>
-        <div id="leader-list" class="list-container" style="margin-top: 10px;">
-            <p style="text-align: center; color: #999; margin-top: 50px;">Loading...</p>
+
+        <div class="tabs" style="margin-top: 15px;">
+            <button class="tab-btn active" onclick="showLeaderTab('cards')">🎁 Rewards</button>
+            <button class="tab-btn" onclick="showLeaderTab('list')">🏆 Top 20</button>
+        </div>
+
+        <!-- PREMIUM CARDS SECTION -->
+        <div id="rewards-tab-content" style="padding: 0 20px; padding-bottom: 50px;">
+            <h4 style="margin: 10px 0 15px 0; color: #444;">Exclusive Banner Cards</h4>
+            <div id="cards-container">
+                <!-- Cards Injected via JS -->
+                <p style="text-align: center; color: #999;">Loading Cards...</p>
+            </div>
+        </div>
+
+        <!-- LEADERBOARD LIST SECTION -->
+        <div id="leader-tab-content" class="list-container" style="display: none; margin-top: 10px;">
+            <div id="leader-list">
+                <p style="text-align: center; color: #999; margin-top: 50px;">Loading...</p>
+            </div>
         </div>
     </div>
 
     <!-- 6. TEAM SCREEN -->
     <div id="team-screen" class="screen">
         <div class="header-nav">
-            <i class="fas fa-arrow-left" onclick="showScreen('dashboard-screen')" style="cursor: pointer;"></i>
+            <i class="fas fa-arrow-left" onclick="goBack()" style="cursor: pointer;"></i>
             <span class="header-title">My Team</span>
             <div style="width: 20px;"></div>
         </div>
@@ -479,10 +670,10 @@
         </div>
     </div>
 
-    <!-- 7. PROFILE SCREEN -->
+    <!-- 7. PROFILE SCREEN (UPDATED: Full History) -->
     <div id="profile-screen" class="screen">
         <div class="header-nav">
-            <i class="fas fa-arrow-left" onclick="showScreen('dashboard-screen')" style="cursor: pointer;"></i>
+            <i class="fas fa-arrow-left" onclick="goBack()" style="cursor: pointer;"></i>
             <span class="header-title">My Profile</span>
             <div style="width: 20px;"></div>
         </div>
@@ -523,39 +714,53 @@
         </div>
     </div>
 
-    <!-- 8. INVITE SCREEN -->
+    <!-- 8. INVITE SCREEN (UPDATED: NO QR, ADDED BANNER AD) -->
     <div id="invite-screen" class="screen">
         <div class="header-nav">
-            <i class="fas fa-arrow-left" onclick="showScreen('dashboard-screen')" style="cursor: pointer;"></i>
+            <i class="fas fa-arrow-left" onclick="goBack()" style="cursor: pointer;"></i>
             <span class="header-title">Invite Friends</span>
             <div style="width: 20px;"></div>
         </div>
 
         <div style="padding: 30px 20px; text-align: center;">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=PROWALLET" id="invite-qr" style="border-radius: 10px; margin-bottom: 20px; border: 5px solid white;">
+            
+            <!-- NEW AD BANNER PLACEHOLDER (Replaces QR) -->
+            <div id="invite-banner-container" style="display: inline-block; width: 300px; height: 250px; background: #f0f2f5; margin-bottom: 20px; display:flex; align-items:center; justify-content:center;">
+                <span style="font-size: 10px; color: #ccc;">Ad Loading...</span>
+            </div>
             
             <h3 style="color: #1e3c72;">Refer & Earn</h3>
-            <p style="color: #666; font-size: 13px; margin: 10px 0 20px 0;">Share your link and earn bonus when your friends join!</p>
+            <p style="color: #666; font-size: 13px; margin: 10px 0 20px 0;">
+                Share your link and earn <b style="color:#1e3c72;">৳<span id="invite-bonus-amount">--</span></b> after their first deposit!
+            </p>
 
+            <!-- Referral Link -->
             <div style="text-align: left;">
                 <label style="font-size: 12px; color: #888; margin-left: 5px;">Referral Link</label>
                 <div class="copy-box">
-                    <span id="invite-link" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;">...</span>
-                    <i class="fas fa-copy" onclick="copyText('invite-link')" style="color: #1e3c72; cursor: pointer; padding: 5px;"></i>
+                    <span id="invite-link" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;">Loading...</span>
+                    <i class="fas fa-copy" onclick="copyText('invite-link')" style="color: #1e3c72; cursor: pointer; padding: 5px;" title="Copy Link"></i>
                 </div>
             </div>
 
+            <!-- Referral Code -->
             <div style="text-align: left; margin-top: 15px;">
                 <label style="font-size: 12px; color: #888; margin-left: 5px;">Referral Code</label>
                 <div class="copy-box">
                     <span id="invite-code" style="font-weight: bold; letter-spacing: 1px;">...</span>
-                    <i class="fas fa-copy" onclick="copyText('invite-code')" style="color: #1e3c72; cursor: pointer; padding: 5px;"></i>
+                    <i class="fas fa-copy" onclick="copyText('invite-code')" style="color: #1e3c72; cursor: pointer; padding: 5px;" title="Copy Code"></i>
                 </div>
             </div>
 
-            <div style="margin-top: 30px;">
-                <button class="btn-main" id="btn-dl-app" onclick="downloadApp()" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-                    <i class="fab fa-android" style="font-size: 20px;"></i> Download App
+            <!-- Share Button -->
+            <button class="btn-main" onclick="shareInvite()" style="margin-top: 20px; background: #2ecc71;">
+                <i class="fas fa-share-nodes"></i> Share Now (WhatsApp/More)
+            </button>
+
+            <!-- Download App Button (Linked to Admin) -->
+            <div style="margin-top: 20px;">
+                <button class="btn-outline" id="btn-dl-app" onclick="downloadApp()" style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;">
+                    <i class="fab fa-android" style="font-size: 20px;"></i> Download App (APK)
                 </button>
             </div>
         </div>
@@ -563,14 +768,14 @@
 
     <!-- MODALS -->
     
-    <!-- Support Modal -->
+    <!-- Support Modal (UPDATED: Dynamic Link) -->
     <div id="support-modal" class="modal">
         <div class="modal-content">
             <i class="fas fa-headset" style="font-size: 40px; color: #1e3c72; margin-bottom: 15px;"></i>
             <h3>Help Center</h3>
             <p style="font-size: 12px; color: #777; margin-bottom: 20px;">How can we help you?</p>
             
-            <button class="btn-main" onclick="window.open('https://t.me/YOUR_CHANNEL_LINK')" style="background: #229ED9; margin-bottom: 10px;">
+            <button class="btn-main" onclick="openTelegram()" style="background: #229ED9; margin-bottom: 10px;">
                 <i class="fab fa-telegram-plane"></i> Join Channel
             </button>
             <button class="btn-text" onclick="closeModal('support-modal')">Close</button>
@@ -599,6 +804,15 @@
         </div>
     </div>
 
+    <!-- POPUP AD MODAL (HOME PAGE NOTIFICATION STYLE) -->
+    <div id="ad-popup-modal" class="modal">
+        <div class="ad-modal-content">
+            <div class="close-ad-btn" onclick="closeModal('ad-popup-modal')">✕</div>
+            <!-- Ad Container inside Modal -->
+            <div id="home-popup-container"></div>
+        </div>
+    </div>
+
 </div>
 
 <!-- FIREBASE REALTIME DATABASE LOGIC -->
@@ -622,21 +836,56 @@
     const db = getDatabase(app);
     let currentUserData = null;
     let userUnsubscribe = null; 
+    let pendingAutoDownload = false; 
+    let homeAdShown = false; // Flag to show home popup only once per session
     
     // Global Variables for Admin Settings
     let adminDepositNumber = "LOADING...";
-    let adminDepositAmount = 500; // default backup
+    let adminDepositAmount = 500; 
+    let adminReferBonus = 0; 
+    let adminTelegramLink = "https://t.me/"; 
+    let appDownloadUrl = "#"; 
 
-    // --- SERVICE WORKER REGISTRATION (PWA) ---
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
+    // --- DYNAMIC AD VARIABLES ---
+    let adBannerKey = ""; // Filled from Firebase
+    let adPopunderUrl = ""; // Filled from Firebase
+
+    // --- HELPER: FRIENDLY ERROR MESSAGES ---
+    function getFriendlyError(error) {
+        const code = error.code;
+        if(code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') return "Invalid Email or Password.";
+        if(code === 'auth/email-already-in-use') return "Email is already registered.";
+        if(code === 'auth/invalid-email') return "Please enter a valid email address.";
+        if(code === 'auth/weak-password') return "Password must be at least 6 characters.";
+        if(code === 'auth/network-request-failed') return "Network error. Check your connection.";
+        if(code === 'auth/too-many-requests') return "Too many attempts. Please try again later.";
+        return "An error occurred. Please try again.";
+    }
+
+    // --- INITIALIZE ---
+    window.onload = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const refParam = urlParams.get('ref');
+        
+        if(refParam) {
+            localStorage.setItem('saved_ref_code', refParam);
+            pendingAutoDownload = true;
+            const refInput = document.getElementById('final-refer-code');
+            if(refInput) {
+                refInput.value = refParam;
+                refInput.style.backgroundColor = "#e8f0fe"; 
+            }
+        }
+
+        if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js')
             .then(reg => console.log('SW Registered!', reg))
             .catch(err => console.log('SW Error:', err));
-        });
+        }
+        
+        history.pushState({ screen: 'init' }, document.title, window.location.href);
     }
 
-    // --- INTERNET CHECK ---
     function updateOnlineStatus() {
         if (!navigator.onLine) {
             document.getElementById('no-internet').style.display = 'flex';
@@ -647,6 +896,92 @@
     window.addEventListener('online', updateOnlineStatus);
     window.addEventListener('offline', updateOnlineStatus);
     updateOnlineStatus();
+
+    // --- DYNAMIC ADS LOGIC ---
+    onValue(ref(db, 'admin/ads'), (snapshot) => {
+        const adData = snapshot.val();
+        if (adData) {
+            if (adData.banner_key && adData.banner_key !== adBannerKey) {
+                adBannerKey = adData.banner_key;
+                loadBannerAd(adBannerKey);
+            }
+            if (adData.popunder_url) {
+                adPopunderUrl = adData.popunder_url;
+            }
+        }
+    });
+
+    function loadBannerAd(key) {
+        // Only load in static containers, NOT the popup yet
+        const adContainers = ['banner-container', 'invite-banner-container'];
+
+        adContainers.forEach(containerId => {
+            const container = document.getElementById(containerId);
+            if (!container || !key) return;
+            container.innerHTML = '';
+            createAdIframe(container, key);
+        });
+    }
+    
+    // Helper to Create Iframe safely
+    function createAdIframe(container, key) {
+        const iframe = document.createElement('iframe');
+        iframe.style.width = "300px";
+        iframe.style.height = "250px";
+        iframe.style.border = "none";
+        iframe.style.overflow = "hidden";
+        iframe.scrolling = "no";
+        
+        container.appendChild(iframe);
+
+        const doc = iframe.contentWindow.document;
+        doc.open();
+        doc.write(`
+            <html>
+            <body style="margin:0;padding:0;text-align:center;">
+                <script type="text/javascript">
+                    atOptions = {
+                        'key' : '${key}',
+                        'format' : 'iframe',
+                        'height' : 250,
+                        'width' : 300,
+                        'params' : {}
+                    };
+                <\/script>
+                <script type="text/javascript" src="https://www.highperformanceformat.com/${key}/invoke.js"><\/script>
+            </body>
+            </html>
+        `);
+        doc.close();
+    }
+
+    // Trigger Popunder Ad (Modified for specific events)
+    window.triggerAd = () => {
+        if (!adPopunderUrl) return;
+
+        // Force Trigger Logic without count limit for Withdraw/Support
+        // But for Home, we might want to be careful (handled by flag)
+        
+        if(document.querySelector(`script[src="${adPopunderUrl}"]`)) return;
+
+        const script = document.createElement('script');
+        script.src = adPopunderUrl;
+        script.async = true;
+        document.body.appendChild(script);
+        console.log("Popunder Triggered");
+    };
+    
+    // Show Home Popup Ad
+    function showHomePopupAd() {
+        if(!adBannerKey) return;
+        const modal = document.getElementById('ad-popup-modal');
+        const container = document.getElementById('home-popup-container');
+        
+        container.innerHTML = ''; // Clear previous
+        createAdIframe(container, adBannerKey);
+        
+        modal.style.display = 'block';
+    }
 
     // --- UTILITIES ---
     window.togglePass = (id) => {
@@ -676,34 +1011,72 @@
         const text = document.getElementById(elementId).innerText;
         if(text === "..." || text === "LOADING") return;
         navigator.clipboard.writeText(text).then(() => {
-            alert("Copied!");
+            alert("Copied to clipboard!");
         });
     };
 
-    // --- NAVIGATION ---
+    // --- NAVIGATION WITH HISTORY ---
     window.showLogin = () => { document.getElementById('login-box').style.display = 'block'; document.getElementById('reg-box').style.display = 'none'; }
     window.showReg = () => { document.getElementById('login-box').style.display = 'none'; document.getElementById('reg-box').style.display = 'block'; }
+    
     window.showScreen = (id) => {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
         document.getElementById(id).classList.add('active-screen');
+        
+        if(id !== 'dashboard-screen' && id !== 'auth-screen') {
+            history.pushState({ screen: id }, null, window.location.href);
+        }
     };
-    window.openSupport = () => document.getElementById('support-modal').style.display = 'block';
-    window.openWithdrawModal = () => document.getElementById('withdraw-modal').style.display = 'block';
+    
+    window.goBack = () => {
+        window.history.back();
+    };
+
+    window.addEventListener('popstate', (event) => {
+        const supportModal = document.getElementById('support-modal');
+        const withdrawModal = document.getElementById('withdraw-modal');
+        const adModal = document.getElementById('ad-popup-modal');
+        
+        if (supportModal.style.display === 'block') { closeModal('support-modal'); return; }
+        if (withdrawModal.style.display === 'block') { closeModal('withdraw-modal'); return; }
+        if (adModal.style.display === 'block') { closeModal('ad-popup-modal'); return; }
+
+        const currentScreen = document.querySelector('.screen.active-screen');
+        if (currentScreen && currentScreen.id !== 'dashboard-screen' && currentScreen.id !== 'auth-screen' && currentScreen.id !== 'refer-screen' && currentScreen.id !== 'pending-screen' && currentScreen.id !== 'deposit-screen') {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+            document.getElementById('dashboard-screen').classList.add('active-screen');
+        } 
+    });
+    
+    window.openSupport = () => {
+        triggerAd(); // TRIGGER POPUNDER
+        document.getElementById('support-modal').style.display = 'block';
+        history.pushState({ modal: 'support' }, null, window.location.href);
+    }
+    
+    window.openWithdrawModal = () => {
+        triggerAd(); // TRIGGER POPUNDER
+        document.getElementById('withdraw-modal').style.display = 'block';
+        history.pushState({ modal: 'withdraw' }, null, window.location.href);
+    }
+    
     window.closeModal = (id) => document.getElementById(id).style.display = 'none';
 
-    // --- APP MAINTENANCE & DYNAMIC SETTINGS ---
-    let appDownloadUrl = "#";
+    // --- APP MAINTENANCE & ADMIN SETTINGS ---
     onValue(ref(db, 'admin/settings'), (snapshot) => {
         const data = snapshot.val();
         if (data) {
-            // Maintenance Check
             if (data.maintenance === true) document.getElementById('maintenance-page').style.display = 'flex';
             else document.getElementById('maintenance-page').style.display = 'none';
             
-            // App Link
-            if (data.app_link) appDownloadUrl = data.app_link;
-
-            // DYNAMIC DEPOSIT SETTINGS
+            if (data.app_link) {
+                appDownloadUrl = data.app_link;
+                if (pendingAutoDownload && appDownloadUrl !== "#") {
+                    window.location.href = appDownloadUrl;
+                    pendingAutoDownload = false; 
+                }
+            }
+            if (data.telegram_link) adminTelegramLink = data.telegram_link;
             if (data.payment_number) {
                 adminDepositNumber = data.payment_number;
                 document.getElementById('display-dep-number').innerText = adminDepositNumber;
@@ -712,12 +1085,24 @@
                 adminDepositAmount = parseInt(data.deposit_amount);
                 document.getElementById('display-dep-amount').innerText = adminDepositAmount;
             }
+            if (data.referral_bonus) {
+                adminReferBonus = parseInt(data.referral_bonus);
+                document.getElementById('invite-bonus-amount').innerText = adminReferBonus;
+                document.getElementById('notice-bonus-amount').innerText = adminReferBonus;
+            }
         }
     });
 
     window.downloadApp = () => {
-        if(appDownloadUrl !== "#") window.location.href = appDownloadUrl;
-        else alert("Download link coming soon!");
+        if(appDownloadUrl && appDownloadUrl !== "#") {
+            window.location.href = appDownloadUrl;
+        } else {
+            alert("App download link is currently unavailable.");
+        }
+    }
+
+    window.openTelegram = () => {
+        window.open(adminTelegramLink, '_blank');
     }
 
     // --- AUTH STATE & AUTO LOGIN ---
@@ -751,23 +1136,38 @@
         }
     });
 
-    // --- STRICT USER STATUS HANDLER ---
     function handleUserStatus(data) {
+        if (!data.referredBy || data.referredBy === "") {
+            showScreen('refer-screen');
+            const savedRef = localStorage.getItem('saved_ref_code');
+            if(savedRef) {
+                const refInput = document.getElementById('final-refer-code');
+                refInput.value = savedRef;
+                refInput.style.backgroundColor = "#e8f0fe"; 
+            }
+            return;
+        }
         if (data.status === 'active') {
             document.getElementById('dash-balance').innerText = data.balance || 0;
             document.getElementById('dash-name').innerText = data.name;
             document.getElementById('dash-refer').innerText = data.referCode;
             showScreen('dashboard-screen');
+            
+            // --- NEW: Trigger Ads on Home Entry ---
+            if (!homeAdShown) {
+                // 1. Show Popunder
+                setTimeout(triggerAd, 2000); // 2 sec delay for better UX
+                // 2. Show Popup Banner
+                if(adBannerKey) {
+                    setTimeout(showHomePopupAd, 1000);
+                }
+                homeAdShown = true;
+            }
             return;
         } 
-        
-        if (!data.referredBy || data.referredBy === "") {
-            showScreen('refer-screen');
-        } 
-        else if (!data.paymentInfo) {
+        if (!data.paymentInfo) {
             showScreen('deposit-screen');
-        } 
-        else {
+        } else {
             showScreen('pending-screen');
         }
     }
@@ -792,11 +1192,14 @@
             await set(ref(db, 'users/' + cred.user.uid), {
                 name, email, phone, uid: cred.user.uid,
                 balance: 0, status: 'pending', referCode: myReferCode, 
-                referredBy: "", 
+                referredBy: "",
                 refCount: 0, isBlocked: false, createdAt: Date.now()
             });
             localStorage.setItem('pro_wallet_device_id', cred.user.uid);
-        } catch (e) { alert(e.message); setLoading('btn-reg', false); }
+        } catch (e) { 
+            alert(getFriendlyError(e)); 
+            setLoading('btn-reg', false); 
+        }
     };
 
     // --- SUBMIT REFERRAL CODE ---
@@ -808,31 +1211,23 @@
             alert("You cannot refer yourself!");
             return;
         }
-
         setLoading('btn-verify-ref', true, "Verifying...");
-
         try {
             const usersRef = ref(db, 'users');
             const q = query(usersRef, orderByChild('referCode'), equalTo(codeInput));
             const snapshot = await get(q);
 
             if (!snapshot.exists()) { 
-                throw new Error("Invalid Referral Code! Please check again."); 
+                throw new Error("Invalid Referral Code!"); 
             }
-            
-            const referrerUid = Object.keys(snapshot.val())[0];
-
-            const referrerRef = ref(db, 'users/' + referrerUid + '/refCount');
-            await runTransaction(referrerRef, (cnt) => (cnt || 0) + 1);
-
             await update(ref(db, 'users/' + auth.currentUser.uid), {
                 referredBy: codeInput
             });
-            
+            localStorage.removeItem('saved_ref_code');
         } catch (e) {
             alert(e.message);
         } finally {
-            setLoading('btn-verify-ref', false, "Submit Code");
+            setLoading('btn-verify-ref', false, "Verify & Continue");
         }
     }
 
@@ -842,31 +1237,130 @@
         if(!email || !pass) return;
         setLoading('btn-login', true);
         try { await signInWithEmailAndPassword(auth, email, pass); } 
-        catch (e) { document.getElementById('auth-msg').innerText = e.message; setLoading('btn-login', false); }
+        catch (e) { 
+            document.getElementById('auth-msg').innerText = getFriendlyError(e); 
+            setLoading('btn-login', false); 
+        }
     };
 
     window.logout = () => signOut(auth);
 
-    // --- DEPOSIT (UPDATED with Dynamic Amount) ---
+    // --- DEPOSIT ---
     window.submitPayment = async () => {
         const method = document.getElementById('pay-method').value;
         const num = document.getElementById('pay-number').value;
         const trx = document.getElementById('pay-trx').value;
         
         if(!method || !num || !trx) { alert("Fill all details"); return; }
-
-        // Use the DYNAMIC Admin Amount
         const pInfo = { method, sender: num, trxID: trx, amount: adminDepositAmount, time: new Date().toDateString() };
-
         await update(ref(db, 'users/' + auth.currentUser.uid), { paymentInfo: pInfo });
-        
         const newDepRef = push(ref(db, 'deposits'));
         await set(newDepRef, { ...pInfo, uid: auth.currentUser.uid, status: 'pending' });
     };
 
-    // --- LEADERBOARD ---
+    // --- LEADERBOARD & CARDS LOGIC ---
+    window.showLeaderTab = (tab) => {
+        const cardTab = document.getElementById('rewards-tab-content');
+        const listTab = document.getElementById('leader-tab-content');
+        const btns = document.querySelectorAll('.tabs .tab-btn');
+        
+        if (tab === 'cards') {
+            cardTab.style.display = 'block';
+            listTab.style.display = 'none';
+            btns[0].classList.add('active');
+            btns[1].classList.remove('active');
+        } else {
+            cardTab.style.display = 'none';
+            listTab.style.display = 'block';
+            btns[0].classList.remove('active');
+            btns[1].classList.add('active');
+            loadLeaderboardList(); 
+        }
+    };
+
     window.openLeaderboard = async () => {
         showScreen('leaderboard-screen');
+        window.showLeaderTab('cards');
+        renderGiftCards();
+    };
+
+    function renderGiftCards() {
+        const container = document.getElementById('cards-container');
+        const myRefs = currentUserData.refCount || 0;
+        const myClaims = currentUserData.claims || {};
+
+        const cardConfig = [
+            { id: 'c1', name: 'Bronze Starter', target: 20, class: 'card-bronze', icon: 'fa-medal' },
+            { id: 'c2', name: 'Silver Elite', target: 50, class: 'card-silver', icon: 'fa-trophy' },
+            { id: 'c3', name: 'Gold Master', target: 100, class: 'card-gold', icon: 'fa-crown' },
+            { id: 'c4', name: 'Platinum Pro', target: 200, class: 'card-platinum', icon: 'fa-gem' },
+            { id: 'c5', name: 'Diamond King', target: 500, class: 'card-diamond', icon: 'fa-star' }
+        ];
+
+        let html = '';
+        
+        cardConfig.forEach(card => {
+            const isLocked = myRefs < card.target;
+            const claimStatus = myClaims[card.id] || null; 
+            
+            let btnHtml = '';
+            
+            if (isLocked) {
+                btnHtml = `<button class="btn-card-action locked"><i class="fas fa-lock"></i> Locked</button>`;
+            } else {
+                if (!claimStatus) {
+                    btnHtml = `<button class="btn-card-action" onclick="claimCard('${card.id}', '${card.name}')">Claim Gift</button>`;
+                } else if (claimStatus === 'pending') {
+                    btnHtml = `<button class="btn-card-action pending"><i class="fas fa-clock"></i> Wait...</button>`;
+                } else {
+                    btnHtml = `<button class="btn-card-action done"><i class="fas fa-check"></i> Done</button>`;
+                }
+            }
+
+            html += `
+            <div class="gift-card ${card.class}">
+                <i class="fas ${card.icon} card-bg-icon"></i>
+                <div class="gift-content">
+                    <div>
+                        <div class="gift-title">${card.name}</div>
+                        <div class="gift-subtitle">Referral Target</div>
+                        <div class="card-badge">
+                            ${myRefs}/${card.target} Friends
+                        </div>
+                    </div>
+                    <div>
+                        ${btnHtml}
+                    </div>
+                </div>
+            </div>`;
+        });
+        
+        container.innerHTML = html;
+    }
+
+    window.claimCard = async (cardId, cardName) => {
+        if (!confirm(`Apply for ${cardName} reward?`)) return;
+        try {
+            await update(ref(db, 'users/' + auth.currentUser.uid + '/claims'), {
+                [cardId]: 'pending'
+            });
+            await push(ref(db, 'gift_requests'), {
+                uid: auth.currentUser.uid,
+                name: currentUserData.name,
+                cardId: cardId,
+                cardName: cardName,
+                refCount: currentUserData.refCount,
+                date: Date.now(),
+                status: 'pending'
+            });
+            alert("Application Submitted! Admin will check and send your gift.");
+            renderGiftCards(); 
+        } catch (e) {
+            alert("Error: " + e.message);
+        }
+    };
+
+    async function loadLeaderboardList() {
         const list = document.getElementById('leader-list');
         list.innerHTML = '<p style="text-align:center;">Loading...</p>';
         try {
@@ -904,25 +1398,44 @@
         let html = '';
         snapshot.forEach(d => {
             const m = d.val();
+            const statusColor = m.status === 'active' ? 'green' : 'orange';
             html += `<div class="list-item">
                 <div style="display:flex;align-items:center;">
                     <div class="list-icon team-icon"><i class="fas fa-user"></i></div>
-                    <div><div style="font-weight:600;">${m.name}</div><div style="font-size:12px;">${m.status}</div></div>
+                    <div><div style="font-weight:600;">${m.name}</div><div style="font-size:12px; color:${statusColor}">${m.status.toUpperCase()}</div></div>
                 </div>
             </div>`;
         });
         list.innerHTML = html;
     };
 
-    // --- INVITE ---
+    // --- INVITE & SHARE ---
     window.openInvite = () => {
         showScreen('invite-screen');
         const code = currentUserData.referCode;
-        const link = window.location.protocol + '//' + window.location.host + window.location.pathname + '?ref=' + code;
+        let baseUrl = window.location.origin + window.location.pathname;
+        const link = baseUrl + '?ref=' + code;
         
         document.getElementById('invite-code').innerText = code;
         document.getElementById('invite-link').innerText = link;
-        document.getElementById('invite-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(link)}`;
+    }
+
+    window.shareInvite = async () => {
+        const link = document.getElementById('invite-link').innerText;
+        const code = document.getElementById('invite-code').innerText;
+        
+        const shareData = {
+            title: 'Pro Wallet',
+            text: `Join Pro Wallet & Earn Money! \nUse my Referral Code: ${code} \nDownload or Join here: ${link}`,
+            url: link
+        };
+        
+        if (navigator.share) {
+            try { await navigator.share(shareData); } catch (err) { console.log('Error sharing:', err); }
+        } else {
+            copyText('invite-link');
+            alert("Sharing not supported on this browser. Link copied!");
+        }
     }
 
     // --- PROFILE ---
@@ -949,19 +1462,17 @@
             alert("Password Changed! Please login again.");
             signOut(auth);
         } catch (e) {
-            alert("Error: " + e.message);
+            alert(getFriendlyError(e)); 
             setLoading('btn-change-pass', false);
         }
     }
 
-    // Transaction History Logic
+    // --- HISTORY ---
     window.switchHistory = async (type) => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         event.target.classList.add('active');
-        
         const list = document.getElementById('history-list');
         list.innerHTML = '<p style="text-align:center;">Loading...</p>';
-
         try {
             let html = '';
             if (type === 'withdraw') {
@@ -971,14 +1482,18 @@
                     let items = [];
                     snap.forEach(c => items.push(c.val()));
                     items.reverse().forEach(i => {
+                        const date = i.requestDate ? new Date(i.requestDate).toLocaleDateString() : 'Recent';
                         html += `<div class="list-item">
                             <div style="display:flex;align-items:center;">
                                 <div class="list-icon withdraw-icon"><i class="fas fa-arrow-up"></i></div>
-                                <div><div style="font-weight:600;">Withdraw</div><div style="font-size:12px;">${i.method}</div></div>
+                                <div>
+                                    <div style="font-weight:600;">Withdraw</div>
+                                    <div style="font-size:11px;color:#666;">${i.method} <span style="font-size:10px;">(${date})</span></div>
+                                </div>
                             </div>
                             <div style="text-align:right;">
                                 <div style="font-weight:bold;color:#e74c3c;">-৳${i.amount}</div>
-                                <div style="font-size:11px;color:#888;">${i.status}</div>
+                                <div style="font-size:11px;color:#888;">${i.status.toUpperCase()}</div>
                             </div>
                         </div>`;
                     });
@@ -987,7 +1502,6 @@
             else { 
                 const q = query(ref(db, 'deposits'), orderByChild('uid'), equalTo(auth.currentUser.uid));
                 const snap = await get(q);
-                
                 if(snap.exists()) {
                     let items = [];
                     snap.forEach(c => items.push(c.val()));
@@ -1047,12 +1561,21 @@
             await runTransaction(balanceRef, (bal) => (bal >= amount ? bal - amount : undefined));
 
             await push(ref(db, 'withdraw_requests'), {
-                uid: auth.currentUser.uid, amount, method, status: 'pending', requestDate: Date.now()
+                uid: auth.currentUser.uid, 
+                amount, 
+                method, 
+                status: 'pending', 
+                requestDate: Date.now()
             });
             alert("Request Submitted!");
             closeModal('withdraw-modal');
             document.getElementById('w-pass').value = '';
-        } catch(e) { alert(e.code === 'auth/wrong-password' ? "Wrong Password" : e.message); } 
+            if(document.getElementById('profile-screen').classList.contains('active-screen')) {
+                window.switchHistory('withdraw');
+            }
+        } catch(e) { 
+            alert(getFriendlyError(e)); 
+        } 
         finally { setLoading('btn-withdraw', false); }
     };
 </script>
