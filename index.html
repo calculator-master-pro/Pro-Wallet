@@ -38,7 +38,7 @@
             align-items: center;
             min-height: 100vh;
             user-select: none;
-            overscroll-behavior-y: contain; /* Prevents pull-to-refresh on mobile */
+            overscroll-behavior-y: contain;
         }
 
         /* Mobile Container */
@@ -85,13 +85,22 @@
             margin: 20px;
             padding: 25px;
             border-radius: 25px;
-            background: linear-gradient(120deg, #152e5a 0%, #2a5298 60%, #00d2ff 100%);
+            background: linear-gradient(120deg, #152e5a 0%, #2a5298 60%, #00d2ff 100%); /* Default Blue */
             color: white;
             box-shadow: 0 15px 35px rgba(30, 60, 114, 0.4);
             position: relative;
             overflow: hidden;
             border: 1px solid rgba(255,255,255,0.15);
+            transition: background 0.5s ease;
         }
+        
+        /* Dynamic Backgrounds (Applied to Wallet & Gift Cards) */
+        .bg-bronze { background: linear-gradient(135deg, #d38312 0%, #a83279 100%) !important; }
+        .bg-silver { background: linear-gradient(135deg, #434343 0%, #000000 100%) !important; }
+        .bg-gold   { background: linear-gradient(135deg, #f12711 0%, #f5af19 100%) !important; }
+        .bg-platinum { background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%) !important; }
+        .bg-diamond { background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%) !important; }
+
         /* Circles for design */
         .wallet-card::before {
             content: ''; position: absolute; top: -50px; right: -50px;
@@ -242,15 +251,9 @@
             padding: 0 20px;
             color: white;
             transition: transform 0.2s;
+            background: #333; /* Default fallback */
         }
         .gift-card:active { transform: scale(0.98); }
-
-        /* Background Gradients */
-        .card-bronze { background: linear-gradient(135deg, #d38312 0%, #a83279 100%); }
-        .card-silver { background: linear-gradient(135deg, #434343 0%, #000000 100%); }
-        .card-gold   { background: linear-gradient(135deg, #f12711 0%, #f5af19 100%); }
-        .card-platinum { background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); }
-        .card-diamond { background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%); }
 
         /* Faded Background Icon */
         .card-bg-icon {
@@ -348,13 +351,22 @@
             width: 30px;
             height: 30px;
             border-radius: 50%;
-            display: flex;
+            display: none; /* Hidden by default */
             align-items: center;
             justify-content: center;
             cursor: pointer;
             font-weight: bold;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             z-index: 10;
+        }
+
+        /* Ad Containers */
+        .banner-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+            min-height: 250px;
         }
 
         /* Special Pages */
@@ -538,7 +550,7 @@
         </div>
     </div>
 
-    <!-- 4. DASHBOARD (Final Home Page - Hidden until Active) -->
+    <!-- 4. DASHBOARD (Final Home Page) -->
     <div id="dashboard-screen" class="screen">
         <!-- Top Nav -->
         <div class="header-nav" style="background: transparent; box-shadow: none; padding-bottom: 0;">
@@ -551,8 +563,8 @@
             </div>
         </div>
 
-        <!-- NEW DESIGNED WALLET CARD -->
-        <div class="wallet-card">
+        <!-- NEW DESIGNED WALLET CARD (Dynamic Background) -->
+        <div class="wallet-card" id="main-wallet-card">
             <!-- Content Wrapper -->
             <div class="wallet-content">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
@@ -568,8 +580,9 @@
                 
                 <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
                     <div style="display: flex; gap: 8px;">
-                         <div class="user-info-pill"><i class="fas fa-check-circle" style="color: #2ecc71;"></i> Active</div>
                          <div class="user-info-pill"><i class="fas fa-id-card"></i> Ref: <span id="dash-refer">...</span></div>
+                         <!-- NEW REFER COUNT IN CARD -->
+                         <div class="user-info-pill"><i class="fas fa-users"></i> Team: <span id="dash-ref-count">0</span></div>
                     </div>
                     <i class="fas fa-wifi" style="transform: rotate(90deg); color: rgba(255,255,255,0.5);"></i>
                 </div>
@@ -616,14 +629,13 @@
         <!-- BANNER AD PLACEMENT (DYNAMIC) -->
         <div style="text-align: center; margin: 20px 0;">
             <div id="banner-container" style="display: inline-block;">
-                <!-- Ads will be injected here via JS from Firebase -->
                 <span style="font-size: 10px; color: #ccc;">Ads</span>
             </div>
         </div>
 
     </div>
 
-    <!-- 5. LEADERBOARD SCREEN (UPDATED WITH PREMIUM CARDS) -->
+    <!-- 5. LEADERBOARD SCREEN (Dynamic Settings) -->
     <div id="leaderboard-screen" class="screen">
         <div class="header-nav">
             <i class="fas fa-arrow-left" onclick="goBack()" style="cursor: pointer;"></i>
@@ -640,7 +652,6 @@
         <div id="rewards-tab-content" style="padding: 0 20px; padding-bottom: 50px;">
             <h4 style="margin: 10px 0 15px 0; color: #444;">Exclusive Banner Cards</h4>
             <div id="cards-container">
-                <!-- Cards Injected via JS -->
                 <p style="text-align: center; color: #999;">Loading Cards...</p>
             </div>
         </div>
@@ -660,6 +671,14 @@
             <span class="header-title">My Team</span>
             <div style="width: 20px;"></div>
         </div>
+        
+        <!-- TEAM BANNER AD -->
+        <div class="banner-box">
+             <div id="team-banner-container" style="display: inline-block; width: 300px; height: 250px; background: #f0f2f5; display:flex; align-items:center; justify-content:center;">
+                <span style="font-size: 10px; color: #ccc;">Ad Loading...</span>
+            </div>
+        </div>
+
         <div style="padding: 20px; text-align: center;">
             <p style="color: #666; font-size: 13px;">Your Refer Code</p>
             <h2 id="team-ref-code" onclick="copyText('team-ref-code')" style="color: #1e3c72; letter-spacing: 2px; cursor: pointer;" title="Click to copy">LOADING</h2>
@@ -670,7 +689,7 @@
         </div>
     </div>
 
-    <!-- 7. PROFILE SCREEN (UPDATED: Full History) -->
+    <!-- 7. PROFILE SCREEN -->
     <div id="profile-screen" class="screen">
         <div class="header-nav">
             <i class="fas fa-arrow-left" onclick="goBack()" style="cursor: pointer;"></i>
@@ -700,6 +719,13 @@
                 <button class="btn-main" id="btn-change-pass" onclick="changeUserPassword()">Update Password</button>
             </div>
         </div>
+        
+        <!-- PROFILE BANNER AD -->
+        <div class="banner-box">
+             <div id="profile-banner-container" style="display: inline-block; width: 300px; height: 250px; background: #f0f2f5; display:flex; align-items:center; justify-content:center;">
+                <span style="font-size: 10px; color: #ccc;">Ad Loading...</span>
+            </div>
+        </div>
 
         <!-- History Section -->
         <h4 style="margin: 0 0 10px 20px; color: #444;">Transaction History</h4>
@@ -714,7 +740,7 @@
         </div>
     </div>
 
-    <!-- 8. INVITE SCREEN (UPDATED: NO QR, ADDED BANNER AD) -->
+    <!-- 8. INVITE SCREEN -->
     <div id="invite-screen" class="screen">
         <div class="header-nav">
             <i class="fas fa-arrow-left" onclick="goBack()" style="cursor: pointer;"></i>
@@ -724,7 +750,7 @@
 
         <div style="padding: 30px 20px; text-align: center;">
             
-            <!-- NEW AD BANNER PLACEHOLDER (Replaces QR) -->
+            <!-- NEW AD BANNER PLACEHOLDER -->
             <div id="invite-banner-container" style="display: inline-block; width: 300px; height: 250px; background: #f0f2f5; margin-bottom: 20px; display:flex; align-items:center; justify-content:center;">
                 <span style="font-size: 10px; color: #ccc;">Ad Loading...</span>
             </div>
@@ -768,7 +794,7 @@
 
     <!-- MODALS -->
     
-    <!-- Support Modal (UPDATED: Dynamic Link) -->
+    <!-- Support Modal -->
     <div id="support-modal" class="modal">
         <div class="modal-content">
             <i class="fas fa-headset" style="font-size: 40px; color: #1e3c72; margin-bottom: 15px;"></i>
@@ -804,12 +830,13 @@
         </div>
     </div>
 
-    <!-- POPUP AD MODAL (HOME PAGE NOTIFICATION STYLE) -->
+    <!-- POPUP AD MODAL (With Timer) -->
     <div id="ad-popup-modal" class="modal">
         <div class="ad-modal-content">
             <div class="close-ad-btn" onclick="closeModal('ad-popup-modal')">✕</div>
             <!-- Ad Container inside Modal -->
             <div id="home-popup-container"></div>
+            <p id="ad-timer-text" style="font-size:10px; color:#999; margin-top:5px;">Please wait...</p>
         </div>
     </div>
 
@@ -837,20 +864,30 @@
     let currentUserData = null;
     let userUnsubscribe = null; 
     let pendingAutoDownload = false; 
-    let homeAdShown = false; // Flag to show home popup only once per session
+    let homeAdShown = false; 
     
-    // Global Variables for Admin Settings
+    // Global Variables
     let adminDepositNumber = "LOADING...";
     let adminDepositAmount = 500; 
     let adminReferBonus = 0; 
     let adminTelegramLink = "https://t.me/"; 
     let appDownloadUrl = "#"; 
 
-    // --- DYNAMIC AD VARIABLES ---
-    let adBannerKey = ""; // Filled from Firebase
-    let adPopunderUrl = ""; // Filled from Firebase
+    // --- DYNAMIC CARD SETTINGS (Admin Controlled) ---
+    // Default Fallback
+    let adminCardSettings = {
+        c1: { target: 20, reward: 50 },
+        c2: { target: 50, reward: 100 },
+        c3: { target: 100, reward: 200 },
+        c4: { target: 200, reward: 500 },
+        c5: { target: 500, reward: 1000 }
+    };
 
-    // --- HELPER: FRIENDLY ERROR MESSAGES ---
+    // --- DYNAMIC ADS VARIABLES ---
+    let adBannerKey = ""; 
+    let adPopunderUrl = ""; 
+
+    // --- HELPER: ERROR MESSAGES ---
     function getFriendlyError(error) {
         const code = error.code;
         if(code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') return "Invalid Email or Password.";
@@ -897,6 +934,50 @@
     window.addEventListener('offline', updateOnlineStatus);
     updateOnlineStatus();
 
+    // --- ADMIN SETTINGS & CARDS ---
+    // Fetch General Settings
+    onValue(ref(db, 'admin/settings'), (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            if (data.maintenance === true) document.getElementById('maintenance-page').style.display = 'flex';
+            else document.getElementById('maintenance-page').style.display = 'none';
+            
+            if (data.app_link) {
+                appDownloadUrl = data.app_link;
+                if (pendingAutoDownload && appDownloadUrl !== "#") {
+                    window.location.href = appDownloadUrl;
+                    pendingAutoDownload = false; 
+                }
+            }
+            if (data.telegram_link) adminTelegramLink = data.telegram_link;
+            if (data.payment_number) {
+                adminDepositNumber = data.payment_number;
+                document.getElementById('display-dep-number').innerText = adminDepositNumber;
+            }
+            if (data.deposit_amount) {
+                adminDepositAmount = parseInt(data.deposit_amount);
+                document.getElementById('display-dep-amount').innerText = adminDepositAmount;
+            }
+            if (data.referral_bonus) {
+                adminReferBonus = parseInt(data.referral_bonus);
+                document.getElementById('invite-bonus-amount').innerText = adminReferBonus;
+                document.getElementById('notice-bonus-amount').innerText = adminReferBonus;
+            }
+        }
+    });
+
+    // Fetch Card Settings (New Requirement)
+    onValue(ref(db, 'admin/card_settings'), (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            adminCardSettings = data; // Update local config with admin data
+            // If user is already loaded, update their card UI
+            if(currentUserData) {
+                updateWalletDesign(currentUserData.refCount || 0);
+            }
+        }
+    });
+
     // --- DYNAMIC ADS LOGIC ---
     onValue(ref(db, 'admin/ads'), (snapshot) => {
         const adData = snapshot.val();
@@ -912,8 +993,7 @@
     });
 
     function loadBannerAd(key) {
-        // Only load in static containers, NOT the popup yet
-        const adContainers = ['banner-container', 'invite-banner-container'];
+        const adContainers = ['banner-container', 'invite-banner-container', 'profile-banner-container', 'team-banner-container'];
 
         adContainers.forEach(containerId => {
             const container = document.getElementById(containerId);
@@ -923,7 +1003,6 @@
         });
     }
     
-    // Helper to Create Iframe safely
     function createAdIframe(container, key) {
         const iframe = document.createElement('iframe');
         iframe.style.width = "300px";
@@ -931,7 +1010,6 @@
         iframe.style.border = "none";
         iframe.style.overflow = "hidden";
         iframe.scrolling = "no";
-        
         container.appendChild(iframe);
 
         const doc = iframe.contentWindow.document;
@@ -955,15 +1033,9 @@
         doc.close();
     }
 
-    // Trigger Popunder Ad (Modified for specific events)
     window.triggerAd = () => {
         if (!adPopunderUrl) return;
-
-        // Force Trigger Logic without count limit for Withdraw/Support
-        // But for Home, we might want to be careful (handled by flag)
-        
         if(document.querySelector(`script[src="${adPopunderUrl}"]`)) return;
-
         const script = document.createElement('script');
         script.src = adPopunderUrl;
         script.async = true;
@@ -971,16 +1043,24 @@
         console.log("Popunder Triggered");
     };
     
-    // Show Home Popup Ad
     function showHomePopupAd() {
         if(!adBannerKey) return;
         const modal = document.getElementById('ad-popup-modal');
         const container = document.getElementById('home-popup-container');
+        const closeBtn = document.querySelector('.close-ad-btn');
+        const timerText = document.getElementById('ad-timer-text');
         
-        container.innerHTML = ''; // Clear previous
+        container.innerHTML = ''; 
         createAdIframe(container, adBannerKey);
         
+        closeBtn.style.display = 'none';
+        timerText.style.display = 'block';
         modal.style.display = 'block';
+
+        setTimeout(() => {
+            closeBtn.style.display = 'flex'; 
+            timerText.style.display = 'none'; 
+        }, 5000);
     }
 
     // --- UTILITIES ---
@@ -1015,31 +1095,32 @@
         });
     };
 
-    // --- NAVIGATION WITH HISTORY ---
+    // --- NAVIGATION ---
     window.showLogin = () => { document.getElementById('login-box').style.display = 'block'; document.getElementById('reg-box').style.display = 'none'; }
     window.showReg = () => { document.getElementById('login-box').style.display = 'none'; document.getElementById('reg-box').style.display = 'block'; }
     
     window.showScreen = (id) => {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
         document.getElementById(id).classList.add('active-screen');
-        
         if(id !== 'dashboard-screen' && id !== 'auth-screen') {
             history.pushState({ screen: id }, null, window.location.href);
         }
     };
     
-    window.goBack = () => {
-        window.history.back();
-    };
+    window.goBack = () => { window.history.back(); };
 
     window.addEventListener('popstate', (event) => {
         const supportModal = document.getElementById('support-modal');
         const withdrawModal = document.getElementById('withdraw-modal');
         const adModal = document.getElementById('ad-popup-modal');
-        
+        const closeBtn = document.querySelector('.close-ad-btn');
+
         if (supportModal.style.display === 'block') { closeModal('support-modal'); return; }
         if (withdrawModal.style.display === 'block') { closeModal('withdraw-modal'); return; }
-        if (adModal.style.display === 'block') { closeModal('ad-popup-modal'); return; }
+        if (adModal.style.display === 'block') { 
+            if(closeBtn.style.display !== 'none') { closeModal('ad-popup-modal'); }
+            return; 
+        }
 
         const currentScreen = document.querySelector('.screen.active-screen');
         if (currentScreen && currentScreen.id !== 'dashboard-screen' && currentScreen.id !== 'auth-screen' && currentScreen.id !== 'refer-screen' && currentScreen.id !== 'pending-screen' && currentScreen.id !== 'deposit-screen') {
@@ -1048,64 +1129,11 @@
         } 
     });
     
-    window.openSupport = () => {
-        triggerAd(); // TRIGGER POPUNDER
-        document.getElementById('support-modal').style.display = 'block';
-        history.pushState({ modal: 'support' }, null, window.location.href);
-    }
-    
-    window.openWithdrawModal = () => {
-        triggerAd(); // TRIGGER POPUNDER
-        document.getElementById('withdraw-modal').style.display = 'block';
-        history.pushState({ modal: 'withdraw' }, null, window.location.href);
-    }
-    
+    window.openSupport = () => { triggerAd(); document.getElementById('support-modal').style.display = 'block'; history.pushState({ modal: 'support' }, null, window.location.href); }
+    window.openWithdrawModal = () => { triggerAd(); document.getElementById('withdraw-modal').style.display = 'block'; history.pushState({ modal: 'withdraw' }, null, window.location.href); }
     window.closeModal = (id) => document.getElementById(id).style.display = 'none';
 
-    // --- APP MAINTENANCE & ADMIN SETTINGS ---
-    onValue(ref(db, 'admin/settings'), (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            if (data.maintenance === true) document.getElementById('maintenance-page').style.display = 'flex';
-            else document.getElementById('maintenance-page').style.display = 'none';
-            
-            if (data.app_link) {
-                appDownloadUrl = data.app_link;
-                if (pendingAutoDownload && appDownloadUrl !== "#") {
-                    window.location.href = appDownloadUrl;
-                    pendingAutoDownload = false; 
-                }
-            }
-            if (data.telegram_link) adminTelegramLink = data.telegram_link;
-            if (data.payment_number) {
-                adminDepositNumber = data.payment_number;
-                document.getElementById('display-dep-number').innerText = adminDepositNumber;
-            }
-            if (data.deposit_amount) {
-                adminDepositAmount = parseInt(data.deposit_amount);
-                document.getElementById('display-dep-amount').innerText = adminDepositAmount;
-            }
-            if (data.referral_bonus) {
-                adminReferBonus = parseInt(data.referral_bonus);
-                document.getElementById('invite-bonus-amount').innerText = adminReferBonus;
-                document.getElementById('notice-bonus-amount').innerText = adminReferBonus;
-            }
-        }
-    });
-
-    window.downloadApp = () => {
-        if(appDownloadUrl && appDownloadUrl !== "#") {
-            window.location.href = appDownloadUrl;
-        } else {
-            alert("App download link is currently unavailable.");
-        }
-    }
-
-    window.openTelegram = () => {
-        window.open(adminTelegramLink, '_blank');
-    }
-
-    // --- AUTH STATE & AUTO LOGIN ---
+    // --- AUTH & USER LOGIC ---
     onAuthStateChanged(auth, (user) => {
         if (user) {
             if(userUnsubscribe) { userUnsubscribe(); }
@@ -1129,10 +1157,7 @@
         } else {
             showScreen('auth-screen');
             const loginBtn = document.getElementById('btn-login');
-            if(loginBtn) {
-                setLoading('btn-login', false);
-                loginBtn.innerText = "Login";
-            }
+            if(loginBtn) { setLoading('btn-login', false); loginBtn.innerText = "Login"; }
         }
     });
 
@@ -1140,95 +1165,81 @@
         if (!data.referredBy || data.referredBy === "") {
             showScreen('refer-screen');
             const savedRef = localStorage.getItem('saved_ref_code');
-            if(savedRef) {
-                const refInput = document.getElementById('final-refer-code');
-                refInput.value = savedRef;
-                refInput.style.backgroundColor = "#e8f0fe"; 
-            }
+            if(savedRef) { document.getElementById('final-refer-code').value = savedRef; document.getElementById('final-refer-code').style.backgroundColor = "#e8f0fe"; }
             return;
         }
         if (data.status === 'active') {
             document.getElementById('dash-balance').innerText = data.balance || 0;
             document.getElementById('dash-name').innerText = data.name;
             document.getElementById('dash-refer').innerText = data.referCode;
+            // UPDATE: Show total refs inside the wallet card
+            document.getElementById('dash-ref-count').innerText = data.refCount || 0;
+
+            // UPDATE: Change wallet design based on progress
+            updateWalletDesign(data.refCount || 0);
+
             showScreen('dashboard-screen');
             
-            // --- NEW: Trigger Ads on Home Entry ---
             if (!homeAdShown) {
-                // 1. Show Popunder
-                setTimeout(triggerAd, 2000); // 2 sec delay for better UX
-                // 2. Show Popup Banner
-                if(adBannerKey) {
-                    setTimeout(showHomePopupAd, 1000);
-                }
+                setTimeout(triggerAd, 2000);
+                if(adBannerKey) { setTimeout(showHomePopupAd, 1500); }
                 homeAdShown = true;
             }
             return;
         } 
-        if (!data.paymentInfo) {
-            showScreen('deposit-screen');
-        } else {
-            showScreen('pending-screen');
-        }
+        if (!data.paymentInfo) { showScreen('deposit-screen'); } else { showScreen('pending-screen'); }
     }
 
-    // --- REGISTRATION LOGIC ---
+    // --- NEW: UPDATE WALLET DESIGN LOGIC ---
+    function updateWalletDesign(refCount) {
+        const card = document.getElementById('main-wallet-card');
+        // Reset classes but keep base 'wallet-card'
+        card.className = 'wallet-card';
+
+        // Check against Admin Settings targets (Highest to Lowest)
+        if (refCount >= adminCardSettings.c5.target) { card.classList.add('bg-diamond'); }
+        else if (refCount >= adminCardSettings.c4.target) { card.classList.add('bg-platinum'); }
+        else if (refCount >= adminCardSettings.c3.target) { card.classList.add('bg-gold'); }
+        else if (refCount >= adminCardSettings.c2.target) { card.classList.add('bg-silver'); }
+        else if (refCount >= adminCardSettings.c1.target) { card.classList.add('bg-bronze'); }
+        // Default stays blue gradient defined in css .wallet-card
+    }
+
     window.registerUser = async () => {
         const existingDevice = localStorage.getItem('pro_wallet_device_id');
         if (existingDevice) { alert("Account Limit Reached!"); return; }
-
         const name = document.getElementById('reg-name').value;
         const email = document.getElementById('reg-email').value;
         const pass = document.getElementById('reg-pass').value;
         const phone = document.getElementById('reg-phone').value;
 
         if(!name || !email || !pass || !phone) { alert("Fill all fields"); return; }
-
         setLoading('btn-reg', true, "Creating...");
         try {
             const cred = await createUserWithEmailAndPassword(auth, email, pass);
             const myReferCode = (name.substring(0,3) + phone.slice(-4)).toUpperCase();
-            
             await set(ref(db, 'users/' + cred.user.uid), {
                 name, email, phone, uid: cred.user.uid,
                 balance: 0, status: 'pending', referCode: myReferCode, 
-                referredBy: "",
-                refCount: 0, isBlocked: false, createdAt: Date.now()
+                referredBy: "", refCount: 0, isBlocked: false, createdAt: Date.now()
             });
             localStorage.setItem('pro_wallet_device_id', cred.user.uid);
-        } catch (e) { 
-            alert(getFriendlyError(e)); 
-            setLoading('btn-reg', false); 
-        }
+        } catch (e) { alert(getFriendlyError(e)); setLoading('btn-reg', false); }
     };
 
-    // --- SUBMIT REFERRAL CODE ---
     window.submitReferCode = async () => {
         const codeInput = document.getElementById('final-refer-code').value.trim().toUpperCase();
         if(!codeInput) { alert("Please enter a code"); return; }
-        
-        if(codeInput === currentUserData.referCode) {
-            alert("You cannot refer yourself!");
-            return;
-        }
+        if(codeInput === currentUserData.referCode) { alert("You cannot refer yourself!"); return; }
         setLoading('btn-verify-ref', true, "Verifying...");
         try {
             const usersRef = ref(db, 'users');
             const q = query(usersRef, orderByChild('referCode'), equalTo(codeInput));
             const snapshot = await get(q);
-
-            if (!snapshot.exists()) { 
-                throw new Error("Invalid Referral Code!"); 
-            }
-            await update(ref(db, 'users/' + auth.currentUser.uid), {
-                referredBy: codeInput
-            });
+            if (!snapshot.exists()) { throw new Error("Invalid Referral Code!"); }
+            await update(ref(db, 'users/' + auth.currentUser.uid), { referredBy: codeInput });
             localStorage.removeItem('saved_ref_code');
-        } catch (e) {
-            alert(e.message);
-        } finally {
-            setLoading('btn-verify-ref', false, "Verify & Continue");
-        }
+        } catch (e) { alert(e.message); } finally { setLoading('btn-verify-ref', false, "Verify & Continue"); }
     }
 
     window.loginUser = async () => {
@@ -1237,20 +1248,15 @@
         if(!email || !pass) return;
         setLoading('btn-login', true);
         try { await signInWithEmailAndPassword(auth, email, pass); } 
-        catch (e) { 
-            document.getElementById('auth-msg').innerText = getFriendlyError(e); 
-            setLoading('btn-login', false); 
-        }
+        catch (e) { document.getElementById('auth-msg').innerText = getFriendlyError(e); setLoading('btn-login', false); }
     };
 
     window.logout = () => signOut(auth);
 
-    // --- DEPOSIT ---
     window.submitPayment = async () => {
         const method = document.getElementById('pay-method').value;
         const num = document.getElementById('pay-number').value;
         const trx = document.getElementById('pay-trx').value;
-        
         if(!method || !num || !trx) { alert("Fill all details"); return; }
         const pInfo = { method, sender: num, trxID: trx, amount: adminDepositAmount, time: new Date().toDateString() };
         await update(ref(db, 'users/' + auth.currentUser.uid), { paymentInfo: pInfo });
@@ -1263,17 +1269,12 @@
         const cardTab = document.getElementById('rewards-tab-content');
         const listTab = document.getElementById('leader-tab-content');
         const btns = document.querySelectorAll('.tabs .tab-btn');
-        
         if (tab === 'cards') {
-            cardTab.style.display = 'block';
-            listTab.style.display = 'none';
-            btns[0].classList.add('active');
-            btns[1].classList.remove('active');
+            cardTab.style.display = 'block'; listTab.style.display = 'none';
+            btns[0].classList.add('active'); btns[1].classList.remove('active');
         } else {
-            cardTab.style.display = 'none';
-            listTab.style.display = 'block';
-            btns[0].classList.remove('active');
-            btns[1].classList.add('active');
+            cardTab.style.display = 'none'; listTab.style.display = 'block';
+            btns[0].classList.remove('active'); btns[1].classList.add('active');
             loadLeaderboardList(); 
         }
     };
@@ -1284,32 +1285,37 @@
         renderGiftCards();
     };
 
+    // UPDATED: Use Admin Settings to Render Cards
     function renderGiftCards() {
         const container = document.getElementById('cards-container');
         const myRefs = currentUserData.refCount || 0;
         const myClaims = currentUserData.claims || {};
 
+        // Configuration Map using Admin Data
         const cardConfig = [
-            { id: 'c1', name: 'Bronze Starter', target: 20, class: 'card-bronze', icon: 'fa-medal' },
-            { id: 'c2', name: 'Silver Elite', target: 50, class: 'card-silver', icon: 'fa-trophy' },
-            { id: 'c3', name: 'Gold Master', target: 100, class: 'card-gold', icon: 'fa-crown' },
-            { id: 'c4', name: 'Platinum Pro', target: 200, class: 'card-platinum', icon: 'fa-gem' },
-            { id: 'c5', name: 'Diamond King', target: 500, class: 'card-diamond', icon: 'fa-star' }
+            { id: 'c1', name: 'Bronze Starter', icon: 'fa-medal', class: 'bg-bronze' },
+            { id: 'c2', name: 'Silver Elite', icon: 'fa-trophy', class: 'bg-silver' },
+            { id: 'c3', name: 'Gold Master', icon: 'fa-crown', class: 'bg-gold' },
+            { id: 'c4', name: 'Platinum Pro', icon: 'fa-gem', class: 'bg-platinum' },
+            { id: 'c5', name: 'Diamond King', icon: 'fa-star', class: 'bg-diamond' }
         ];
 
         let html = '';
         
         cardConfig.forEach(card => {
-            const isLocked = myRefs < card.target;
+            const settings = adminCardSettings[card.id]; // Get Target & Reward
+            const target = settings ? settings.target : 999;
+            const reward = settings ? settings.reward : 0;
+            
+            const isLocked = myRefs < target;
             const claimStatus = myClaims[card.id] || null; 
             
             let btnHtml = '';
-            
             if (isLocked) {
                 btnHtml = `<button class="btn-card-action locked"><i class="fas fa-lock"></i> Locked</button>`;
             } else {
                 if (!claimStatus) {
-                    btnHtml = `<button class="btn-card-action" onclick="claimCard('${card.id}', '${card.name}')">Claim Gift</button>`;
+                    btnHtml = `<button class="btn-card-action" onclick="claimCard('${card.id}', '${card.name}')">Claim</button>`;
                 } else if (claimStatus === 'pending') {
                     btnHtml = `<button class="btn-card-action pending"><i class="fas fa-clock"></i> Wait...</button>`;
                 } else {
@@ -1323,27 +1329,22 @@
                 <div class="gift-content">
                     <div>
                         <div class="gift-title">${card.name}</div>
-                        <div class="gift-subtitle">Referral Target</div>
+                        <div class="gift-subtitle">Reward: ৳${reward}</div>
                         <div class="card-badge">
-                            ${myRefs}/${card.target} Friends
+                            ${myRefs}/${target} Friends
                         </div>
                     </div>
-                    <div>
-                        ${btnHtml}
-                    </div>
+                    <div>${btnHtml}</div>
                 </div>
             </div>`;
         });
-        
         container.innerHTML = html;
     }
 
     window.claimCard = async (cardId, cardName) => {
         if (!confirm(`Apply for ${cardName} reward?`)) return;
         try {
-            await update(ref(db, 'users/' + auth.currentUser.uid + '/claims'), {
-                [cardId]: 'pending'
-            });
+            await update(ref(db, 'users/' + auth.currentUser.uid + '/claims'), { [cardId]: 'pending' });
             await push(ref(db, 'gift_requests'), {
                 uid: auth.currentUser.uid,
                 name: currentUserData.name,
@@ -1355,9 +1356,16 @@
             });
             alert("Application Submitted! Admin will check and send your gift.");
             renderGiftCards(); 
-        } catch (e) {
-            alert("Error: " + e.message);
-        }
+        } catch (e) { alert("Error: " + e.message); }
+    };
+
+    const getRankIcon = (count) => {
+        if(count >= adminCardSettings.c5.target) return '<i class="fas fa-star" style="color:#8E2DE2; margin-right:5px;" title="Diamond"></i>';
+        if(count >= adminCardSettings.c4.target) return '<i class="fas fa-gem" style="color:#00c6ff; margin-right:5px;" title="Platinum"></i>';
+        if(count >= adminCardSettings.c3.target) return '<i class="fas fa-crown" style="color:#f1c40f; margin-right:5px;" title="Gold"></i>';
+        if(count >= adminCardSettings.c2.target) return '<i class="fas fa-trophy" style="color:#7f8c8d; margin-right:5px;" title="Silver"></i>';
+        if(count >= adminCardSettings.c1.target) return '<i class="fas fa-medal" style="color:#cd7f32; margin-right:5px;" title="Bronze"></i>';
+        return '';
     };
 
     async function loadLeaderboardList() {
@@ -1369,26 +1377,32 @@
             let usersArray = [];
             snapshot.forEach((c) => usersArray.push(c.val()));
             usersArray.reverse();
+            
             let html = ''; let rank = 1;
             usersArray.forEach(u => {
+                const count = u.refCount || 0;
+                const rankIcon = getRankIcon(count);
                 html += `<div class="list-item">
                     <div style="display:flex;align-items:center;">
                         <div class="rank-badge">${rank++}</div>
                         <div style="margin-left:15px;">
-                            <div style="font-weight:600;">${u.name}</div>
+                            <div style="font-weight:600; display:flex; align-items:center;">
+                                ${rankIcon} ${u.name}
+                            </div>
                             <div style="font-size:11px;color:#888;">${u.referCode}</div>
                         </div>
                     </div>
-                    <div style="font-weight:bold;color:#1e3c72;">${u.refCount||0} Refs</div>
+                    <div style="font-weight:bold;color:#1e3c72;">${count} Refs</div>
                 </div>`;
             });
             list.innerHTML = html || '<p style="text-align:center;">No data.</p>';
         } catch (e) { list.innerHTML = 'Error loading.'; }
     }
 
-    // --- TEAM ---
+    // --- TEAM, PROFILE, HISTORY (Existing Logic) ---
     window.openTeam = async () => {
         showScreen('team-screen');
+        if(adBannerKey) loadBannerAd(adBannerKey);
         document.getElementById('team-ref-code').innerText = currentUserData.referCode;
         const list = document.getElementById('team-list');
         list.innerHTML = "Loading...";
@@ -1409,13 +1423,11 @@
         list.innerHTML = html;
     };
 
-    // --- INVITE & SHARE ---
     window.openInvite = () => {
         showScreen('invite-screen');
         const code = currentUserData.referCode;
         let baseUrl = window.location.origin + window.location.pathname;
         const link = baseUrl + '?ref=' + code;
-        
         document.getElementById('invite-code').innerText = code;
         document.getElementById('invite-link').innerText = link;
     }
@@ -1423,24 +1435,14 @@
     window.shareInvite = async () => {
         const link = document.getElementById('invite-link').innerText;
         const code = document.getElementById('invite-code').innerText;
-        
-        const shareData = {
-            title: 'Pro Wallet',
-            text: `Join Pro Wallet & Earn Money! \nUse my Referral Code: ${code} \nDownload or Join here: ${link}`,
-            url: link
-        };
-        
-        if (navigator.share) {
-            try { await navigator.share(shareData); } catch (err) { console.log('Error sharing:', err); }
-        } else {
-            copyText('invite-link');
-            alert("Sharing not supported on this browser. Link copied!");
-        }
+        const shareData = { title: 'Pro Wallet', text: `Join & Earn! Code: ${code} \nLink: ${link}`, url: link };
+        if (navigator.share) { try { await navigator.share(shareData); } catch (err) { console.log('Error sharing:', err); } } 
+        else { copyText('invite-link'); alert("Link copied!"); }
     }
 
-    // --- PROFILE ---
     window.openProfile = () => {
         showScreen('profile-screen');
+        if(adBannerKey) loadBannerAd(adBannerKey);
         document.getElementById('profile-name').innerText = currentUserData.name;
         document.getElementById('profile-email').innerText = currentUserData.email;
         document.getElementById('profile-phone').innerText = currentUserData.phone;
@@ -1451,23 +1453,16 @@
     window.changeUserPassword = async () => {
         const oldPass = document.getElementById('old-pass').value;
         const newPass = document.getElementById('new-pass').value;
-        if(!oldPass || !newPass) { alert("Enter both passwords"); return; }
-        if(newPass.length < 6) { alert("New password too short"); return; }
-
+        if(!oldPass || !newPass || newPass.length < 6) { alert("Invalid input"); return; }
         setLoading('btn-change-pass', true);
         try {
             const credential = EmailAuthProvider.credential(auth.currentUser.email, oldPass);
             await reauthenticateWithCredential(auth.currentUser, credential);
             await updatePassword(auth.currentUser, newPass);
-            alert("Password Changed! Please login again.");
-            signOut(auth);
-        } catch (e) {
-            alert(getFriendlyError(e)); 
-            setLoading('btn-change-pass', false);
-        }
+            alert("Password Changed! Login again."); signOut(auth);
+        } catch (e) { alert(getFriendlyError(e)); setLoading('btn-change-pass', false); }
     }
 
-    // --- HISTORY ---
     window.switchHistory = async (type) => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         event.target.classList.add('active');
@@ -1479,67 +1474,43 @@
                 const q = query(ref(db, 'withdraw_requests'), orderByChild('uid'), equalTo(auth.currentUser.uid));
                 const snap = await get(q);
                 if(snap.exists()) {
-                    let items = [];
-                    snap.forEach(c => items.push(c.val()));
+                    let items = []; snap.forEach(c => items.push(c.val()));
                     items.reverse().forEach(i => {
                         const date = i.requestDate ? new Date(i.requestDate).toLocaleDateString() : 'Recent';
                         html += `<div class="list-item">
                             <div style="display:flex;align-items:center;">
                                 <div class="list-icon withdraw-icon"><i class="fas fa-arrow-up"></i></div>
-                                <div>
-                                    <div style="font-weight:600;">Withdraw</div>
-                                    <div style="font-size:11px;color:#666;">${i.method} <span style="font-size:10px;">(${date})</span></div>
-                                </div>
+                                <div><div style="font-weight:600;">Withdraw</div><div style="font-size:11px;color:#666;">${i.method} (${date})</div></div>
                             </div>
-                            <div style="text-align:right;">
-                                <div style="font-weight:bold;color:#e74c3c;">-৳${i.amount}</div>
-                                <div style="font-size:11px;color:#888;">${i.status.toUpperCase()}</div>
-                            </div>
+                            <div style="text-align:right;"><div style="font-weight:bold;color:#e74c3c;">-৳${i.amount}</div><div style="font-size:11px;color:#888;">${i.status.toUpperCase()}</div></div>
                         </div>`;
                     });
                 } else html = '<p style="text-align:center; color:#999; margin-top:20px;">No withdrawals yet.</p>';
-            } 
-            else { 
+            } else { 
                 const q = query(ref(db, 'deposits'), orderByChild('uid'), equalTo(auth.currentUser.uid));
                 const snap = await get(q);
                 if(snap.exists()) {
-                    let items = [];
-                    snap.forEach(c => items.push(c.val()));
+                    let items = []; snap.forEach(c => items.push(c.val()));
                     items.reverse().forEach(i => {
                         html += `<div class="list-item">
                             <div style="display:flex;align-items:center;">
                                 <div class="list-icon deposit-icon"><i class="fas fa-arrow-down"></i></div>
                                 <div><div style="font-weight:600;">Deposit</div><div style="font-size:12px;">${i.method}</div></div>
                             </div>
-                            <div style="text-align:right;">
-                                <div style="font-weight:bold;color:#2ecc71;">+৳${i.amount}</div>
-                                <div style="font-size:11px;color:#888;">${i.status || 'Success'}</div>
-                            </div>
+                            <div style="text-align:right;"><div style="font-weight:bold;color:#2ecc71;">+৳${i.amount}</div><div style="font-size:11px;color:#888;">${i.status || 'Success'}</div></div>
                         </div>`;
                     });
                 } else {
                      if(currentUserData.paymentInfo) {
                         const p = currentUserData.paymentInfo;
-                        html = `<div class="list-item">
-                            <div style="display:flex;align-items:center;">
-                                <div class="list-icon deposit-icon"><i class="fas fa-arrow-down"></i></div>
-                                <div><div style="font-weight:600;">Deposit</div><div style="font-size:12px;">${p.method}</div></div>
-                            </div>
-                            <div style="text-align:right;">
-                                <div style="font-weight:bold;color:#2ecc71;">+৳${p.amount}</div>
-                                <div style="font-size:11px;color:#888;">Initial</div>
-                            </div>
-                        </div>`;
-                     } else {
-                        html = '<p style="text-align:center; color:#999; margin-top:20px;">No deposits found.</p>';
-                     }
+                        html = `<div class="list-item"><div style="display:flex;align-items:center;"><div class="list-icon deposit-icon"><i class="fas fa-arrow-down"></i></div><div><div style="font-weight:600;">Deposit</div><div style="font-size:12px;">${p.method}</div></div></div><div style="text-align:right;"><div style="font-weight:bold;color:#2ecc71;">+৳${p.amount}</div><div style="font-size:11px;color:#888;">Initial</div></div></div>`;
+                     } else { html = '<p style="text-align:center; color:#999; margin-top:20px;">No deposits found.</p>'; }
                 }
             }
             list.innerHTML = html;
         } catch(e) { console.error(e); list.innerHTML = "Error loading history."; }
     }
 
-    // --- WITHDRAW ---
     window.processWithdraw = async () => {
         const amountStr = document.getElementById('w-amount').value;
         const method = document.getElementById('w-method').value;
@@ -1547,7 +1518,6 @@
 
         if (!/^\d+$/.test(amountStr)) { alert("Amount must be a number"); return; }
         const amount = parseInt(amountStr);
-
         if(amount < 200) { alert("Minimum 200 Taka"); return; }
         if(currentUserData.balance < amount) { alert("Insufficient Balance"); return; }
         if(!method || !pass) { alert("Fill all fields"); return; }
@@ -1556,26 +1526,14 @@
         try {
             const credential = EmailAuthProvider.credential(auth.currentUser.email, pass);
             await reauthenticateWithCredential(auth.currentUser, credential);
-            
             const balanceRef = ref(db, 'users/' + auth.currentUser.uid + '/balance');
             await runTransaction(balanceRef, (bal) => (bal >= amount ? bal - amount : undefined));
-
-            await push(ref(db, 'withdraw_requests'), {
-                uid: auth.currentUser.uid, 
-                amount, 
-                method, 
-                status: 'pending', 
-                requestDate: Date.now()
-            });
+            await push(ref(db, 'withdraw_requests'), { uid: auth.currentUser.uid, amount, method, status: 'pending', requestDate: Date.now() });
             alert("Request Submitted!");
             closeModal('withdraw-modal');
             document.getElementById('w-pass').value = '';
-            if(document.getElementById('profile-screen').classList.contains('active-screen')) {
-                window.switchHistory('withdraw');
-            }
-        } catch(e) { 
-            alert(getFriendlyError(e)); 
-        } 
+            if(document.getElementById('profile-screen').classList.contains('active-screen')) { window.switchHistory('withdraw'); }
+        } catch(e) { alert(getFriendlyError(e)); } 
         finally { setLoading('btn-withdraw', false); }
     };
 </script>
