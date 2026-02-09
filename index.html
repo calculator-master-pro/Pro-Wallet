@@ -319,6 +319,30 @@
 
         /* --- END NEW CARD DESIGN --- */
 
+        /* --- NEW LEADERBOARD STYLES (STICKY FOOTER) --- */
+        .leader-scroll-area {
+            padding-bottom: 80px; /* Ensure last item is not hidden */
+        }
+        .sticky-rank-footer {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 414px; /* Matches app container */
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            color: white;
+            padding: 12px 20px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+            z-index: 100;
+            display: none; /* Hidden by default */
+            justify-content: space-between;
+            align-items: center;
+        }
+        /* --- END LEADERBOARD STYLES --- */
+
         /* Modals */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -406,7 +430,8 @@
         <i class="fas fa-wifi special-icon" style="color: var(--danger);"></i>
         <h2>No Internet</h2>
         <p>Please check your connection.</p>
-        <button class="btn-main" onclick="location.reload()">Retry</button>
+        <!-- UPDATED BUTTON: Calls JS function instead of location.reload() -->
+        <button class="btn-main" id="btn-retry-net" onclick="checkInternetManual()">Retry</button>
     </div>
     
     <div id="maintenance-page" class="special-page">
@@ -635,7 +660,7 @@
 
     </div>
 
-    <!-- 5. LEADERBOARD SCREEN (Dynamic Settings) -->
+    <!-- 5. LEADERBOARD SCREEN (Dynamic Settings & Sticky Rank) -->
     <div id="leaderboard-screen" class="screen">
         <div class="header-nav">
             <i class="fas fa-arrow-left" onclick="goBack()" style="cursor: pointer;"></i>
@@ -657,9 +682,25 @@
         </div>
 
         <!-- LEADERBOARD LIST SECTION -->
-        <div id="leader-tab-content" class="list-container" style="display: none; margin-top: 10px;">
-            <div id="leader-list">
+        <div id="leader-tab-content" style="display: none; margin-top: 10px;">
+            <div id="leader-list" class="list-container leader-scroll-area">
                 <p style="text-align: center; color: #999; margin-top: 50px;">Loading...</p>
+            </div>
+            
+            <!-- STICKY MY RANK FOOTER -->
+            <div id="my-rank-footer" class="sticky-rank-footer">
+                <div style="display:flex; align-items:center;">
+                    <div id="my-rank-circle" style="background: rgba(255,255,255,0.2); color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 12px; border: 2px solid rgba(255,255,255,0.5);">
+                        #
+                    </div>
+                    <div>
+                        <div style="font-size: 13px; font-weight: bold;">My Ranking</div>
+                        <div style="font-size: 11px; opacity: 0.8;" id="my-rank-name">Loading...</div>
+                    </div>
+                </div>
+                <div style="font-weight:bold; font-size: 16px;">
+                    <span id="my-rank-count">0</span> Refs
+                </div>
             </div>
         </div>
     </div>
@@ -846,7 +887,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-    import { getDatabase, ref, set, update, onValue, get, child, push, query, orderByChild, equalTo, limitToLast, runTransaction } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    import { getDatabase, ref, set, update, onValue, get, child, push, query, orderByChild, equalTo, limitToLast, startAt, runTransaction } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
     const firebaseConfig = {
             apiKey: "AIzaSyD9Umavm907AQdAFqYXT4wotrTuqi2nh3s",
@@ -923,16 +964,40 @@
         history.pushState({ screen: 'init' }, document.title, window.location.href);
     }
 
-    function updateOnlineStatus() {
+    // --- INTERNET CHECK LOGIC (UPDATED) ---
+    window.updateOnlineStatus = () => {
+        const noNetScreen = document.getElementById('no-internet');
         if (!navigator.onLine) {
-            document.getElementById('no-internet').style.display = 'flex';
+            noNetScreen.style.display = 'flex';
         } else {
-            document.getElementById('no-internet').style.display = 'none';
+            noNetScreen.style.display = 'none';
         }
     }
-    window.addEventListener('online', updateOnlineStatus);
-    window.addEventListener('offline', updateOnlineStatus);
-    updateOnlineStatus();
+
+    // NEW FUNCTION: Manual Check without Reload
+    window.checkInternetManual = () => {
+        const btn = document.getElementById('btn-retry-net');
+        const originalText = btn.innerText;
+        
+        // Show loading state
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+        btn.disabled = true;
+
+        setTimeout(() => {
+            if (navigator.onLine) {
+                window.updateOnlineStatus(); // Hides screen if online
+            } else {
+                alert("Still Offline. Please check WiFi/Data.");
+            }
+            // Reset button
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }, 1500); // 1.5s delay to simulate checking
+    }
+
+    window.addEventListener('online', window.updateOnlineStatus);
+    window.addEventListener('offline', window.updateOnlineStatus);
+    window.updateOnlineStatus();
 
     // --- ADMIN SETTINGS & CARDS ---
     // Fetch General Settings
@@ -1368,21 +1433,57 @@
         return '';
     };
 
+    // --- UPDATED LEADERBOARD LIST LOGIC (FIXED) ---
     async function loadLeaderboardList() {
         const list = document.getElementById('leader-list');
-        list.innerHTML = '<p style="text-align:center;">Loading...</p>';
+        const footer = document.getElementById('my-rank-footer');
+        
+        list.innerHTML = '<p style="text-align:center; margin-top:20px;">Loading Top 20...</p>';
+        footer.style.display = 'none';
+
         try {
-            const q = query(ref(db, 'users'), orderByChild('refCount'), limitToLast(20));
-            const snapshot = await get(q);
-            let usersArray = [];
-            snapshot.forEach((c) => usersArray.push(c.val()));
-            usersArray.reverse();
-            
-            let html = ''; let rank = 1;
-            usersArray.forEach(u => {
+            // 1. Fetch ALL users (Bulletproof method)
+            const usersRef = ref(db, 'users');
+            const snapshot = await get(usersRef);
+
+            if (!snapshot.exists()) {
+                list.innerHTML = '<p style="text-align:center;">No users found.</p>';
+                return;
+            }
+
+            // 2. Convert to array and handle missing refCount
+            let allUsers = [];
+            snapshot.forEach((child) => {
+                const u = child.val();
+                if (!u.refCount) u.refCount = 0; // Default to 0 if undefined
+                allUsers.push(u);
+            });
+
+            // 3. Sort Client-Side (Highest first)
+            allUsers.sort((a, b) => b.refCount - a.refCount);
+
+            // 4. Find My Rank
+            const myUid = auth.currentUser.uid;
+            const myIndex = allUsers.findIndex(u => u.uid === myUid);
+            const myRank = myIndex + 1; 
+            const myData = allUsers[myIndex];
+
+            // 5. Slice Top 20
+            const top20Users = allUsers.slice(0, 20);
+
+            // 6. Render List
+            let html = '';
+            let rank = 1;
+
+            top20Users.forEach(u => {
                 const count = u.refCount || 0;
                 const rankIcon = getRankIcon(count);
-                html += `<div class="list-item">
+                
+                // Highlight Me
+                const isMe = u.uid === myUid;
+                const bgStyle = isMe ? 'background: #e8f0fe; border:1px solid #1e3c72;' : '';
+
+                html += `<div class="list-item" style="${bgStyle}">
                     <div style="display:flex;align-items:center;">
                         <div class="rank-badge">${rank++}</div>
                         <div style="margin-left:15px;">
@@ -1395,8 +1496,21 @@
                     <div style="font-weight:bold;color:#1e3c72;">${count} Refs</div>
                 </div>`;
             });
-            list.innerHTML = html || '<p style="text-align:center;">No data.</p>';
-        } catch (e) { list.innerHTML = 'Error loading.'; }
+
+            list.innerHTML = html;
+
+            // 7. Update Sticky Footer
+            if (myData) {
+                document.getElementById('my-rank-circle').innerText = myRank;
+                document.getElementById('my-rank-name').innerText = myData.name;
+                document.getElementById('my-rank-count').innerText = myData.refCount;
+                footer.style.display = 'flex';
+            }
+
+        } catch (e) { 
+            console.error(e);
+            list.innerHTML = '<p style="text-align:center; color:red;">Error loading list.</p>'; 
+        }
     }
 
     // --- TEAM, PROFILE, HISTORY (Existing Logic) ---
