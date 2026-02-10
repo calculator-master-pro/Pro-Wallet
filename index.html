@@ -525,10 +525,31 @@
                 <!-- DYNAMIC AMOUNT -->
                 <h1 style="color: #1e3c72; font-size: 40px; font-weight: 700;">৳<span id="display-dep-amount">...</span></h1>
                 
-                <div style="margin: 20px 0; padding: 15px; background: #f8f9fa; border: 1px dashed #1e3c72; border-radius: 10px;">
-                    <span style="font-size: 12px; color: #888;">Send money to (Bkash/Nagad)</span>
-                    <!-- DYNAMIC NUMBER -->
-                    <h3 style="color: #1e3c72; margin-top: 5px; cursor:pointer;" id="display-dep-number" onclick="copyText('display-dep-number')">Loading...</h3>
+                <div style="margin: 20px 0; padding: 5px;">
+                    <span style="font-size: 12px; color: #888;">Send money to these numbers</span>
+                    
+                    <!-- BKASH BOX -->
+                    <div style="text-align: left; background: #eef2f5; padding: 10px; border-radius: 10px; margin-top: 10px; margin-bottom: 10px; border-left: 4px solid #E2136E;">
+                        <span style="font-size: 12px; color: #E2136E; font-weight:bold;">Bkash (Personal)</span>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h3 id="display-bkash-number" style="margin:0; color:#333; font-size:16px;">Loading...</h3>
+                            <div onclick="copyText('display-bkash-number')" style="background: white; padding: 5px 10px; border-radius: 5px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                <i class="fas fa-copy" style="color:#1e3c72;"></i> Copy
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NAGAD BOX -->
+                    <div style="text-align: left; background: #eef2f5; padding: 10px; border-radius: 10px; border-left: 4px solid #F68C1F;">
+                        <span style="font-size: 12px; color: #F68C1F; font-weight:bold;">Nagad (Personal)</span>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h3 id="display-nagad-number" style="margin:0; color:#333; font-size:16px;">Loading...</h3>
+                            <div onclick="copyText('display-nagad-number')" style="background: white; padding: 5px 10px; border-radius: 5px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                <i class="fas fa-copy" style="color:#1e3c72;"></i> Copy
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -849,7 +870,7 @@
         </div>
     </div>
 
-    <!-- Withdraw Modal -->
+    <!-- Withdraw Modal (UPDATED) -->
     <div id="withdraw-modal" class="modal">
         <div class="modal-content">
             <h3>Withdraw Money</h3>
@@ -858,8 +879,22 @@
                 <input type="number" id="w-amount" placeholder="Amount (Numbers only)" 
                        style="margin-bottom: 10px;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 
-                <input type="number" id="w-method" placeholder="Bkash/Nagad Number" 
-                       style="margin-bottom: 10px;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <!-- NEW SELECT METHOD DROPDOWN -->
+                <div class="input-group" style="margin-bottom: 10px;">
+                    <i class="fas fa-credit-card fa-icon"></i>
+                    <select id="w-select-method" style="padding-left: 45px; width: 100%; border-radius: 12px; height: 50px; border: 1px solid #eee;">
+                        <option value="">Select Method</option>
+                        <option value="Bkash">Bkash</option>
+                        <option value="Nagad">Nagad</option>
+                    </select>
+                </div>
+
+                <!-- Number Input (ID Changed to w-wallet-number) -->
+                <div class="input-group" style="margin-bottom: 10px;">
+                    <i class="fas fa-mobile-alt fa-icon"></i>
+                    <input type="number" id="w-wallet-number" placeholder="Bkash/Nagad Number" 
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                </div>
 
                 <div class="input-group" style="margin-bottom: 0;">
                     <i class="fas fa-lock fa-icon"></i>
@@ -908,7 +943,6 @@
     let homeAdShown = false; 
     
     // Global Variables
-    let adminDepositNumber = "LOADING...";
     let adminDepositAmount = 500; 
     let adminReferBonus = 0; 
     let adminTelegramLink = "https://t.me/"; 
@@ -1015,10 +1049,17 @@
                 }
             }
             if (data.telegram_link) adminTelegramLink = data.telegram_link;
-            if (data.payment_number) {
-                adminDepositNumber = data.payment_number;
-                document.getElementById('display-dep-number').innerText = adminDepositNumber;
-            }
+            
+            // UPDATED DEPOSIT NUMBER LOGIC (Two Separate Numbers)
+            // It tries to find specific numbers, otherwise falls back to general
+            let generalNum = data.payment_number || "Contact Admin";
+            
+            let bkashNum = data.bkash_number || generalNum;
+            let nagadNum = data.nagad_number || generalNum;
+
+            document.getElementById('display-bkash-number').innerText = bkashNum;
+            document.getElementById('display-nagad-number').innerText = nagadNum;
+
             if (data.deposit_amount) {
                 adminDepositAmount = parseInt(data.deposit_amount);
                 document.getElementById('display-dep-amount').innerText = adminDepositAmount;
@@ -1625,16 +1666,24 @@
         } catch(e) { console.error(e); list.innerHTML = "Error loading history."; }
     }
 
+    // UPDATED WITHDRAW FUNCTION (Handles new Select + Input)
     window.processWithdraw = async () => {
         const amountStr = document.getElementById('w-amount').value;
-        const method = document.getElementById('w-method').value;
+        const selectedMethod = document.getElementById('w-select-method').value;
+        const walletNumber = document.getElementById('w-wallet-number').value;
         const pass = document.getElementById('w-pass').value;
 
         if (!/^\d+$/.test(amountStr)) { alert("Amount must be a number"); return; }
         const amount = parseInt(amountStr);
         if(amount < 200) { alert("Minimum 200 Taka"); return; }
         if(currentUserData.balance < amount) { alert("Insufficient Balance"); return; }
-        if(!method || !pass) { alert("Fill all fields"); return; }
+        
+        if(!selectedMethod) { alert("Please select a method (Bkash/Nagad)"); return; }
+        if(!walletNumber) { alert("Enter your Wallet Number"); return; }
+        if(!pass) { alert("Enter Password"); return; }
+
+        // Combine for Admin View: "Bkash - 017xxxxxxxx"
+        const finalMethodStr = selectedMethod + " - " + walletNumber;
 
         setLoading('btn-withdraw', true);
         try {
@@ -1642,7 +1691,7 @@
             await reauthenticateWithCredential(auth.currentUser, credential);
             const balanceRef = ref(db, 'users/' + auth.currentUser.uid + '/balance');
             await runTransaction(balanceRef, (bal) => (bal >= amount ? bal - amount : undefined));
-            await push(ref(db, 'withdraw_requests'), { uid: auth.currentUser.uid, amount, method, status: 'pending', requestDate: Date.now() });
+            await push(ref(db, 'withdraw_requests'), { uid: auth.currentUser.uid, amount, method: finalMethodStr, status: 'pending', requestDate: Date.now() });
             alert("Request Submitted!");
             closeModal('withdraw-modal');
             document.getElementById('w-pass').value = '';
